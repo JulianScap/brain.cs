@@ -6,6 +6,7 @@ namespace Brain;
 public class NeuralNetwork
 {
     private readonly NeuralNetworkConfiguration _configuration;
+    private readonly int _errorCheckInterval;
     private Action _adjustWeights;
     private double[][] _biasChangesHigh = Array.Empty<double[]>();
     private double[][] _biasChangesLow = Array.Empty<double[]>();
@@ -15,29 +16,22 @@ public class NeuralNetwork
     private double[][][] _changesHigh = Array.Empty<double[][]>();
     private double[][][] _changesLow = Array.Empty<double[][]>();
     private double[][] _deltas = Array.Empty<double[]>();
-    private readonly int _errorCheckInterval;
     private double[][] _errors = Array.Empty<double[]>();
-    private int _inputLookupLength;
     private int _iterations;
     private int _outputLayer = -1;
-    private int _outputLookupLength;
     private double[][] _outputs = Array.Empty<double[]>();
     private Func<double[], double[]> _runInput;
     private int[] _sizes;
-    private NeuralNetworkTrainingOptions _trainOpts = new NeuralNetworkTrainingOptions();
+    private NeuralNetworkTrainingOptions _trainOpts = new();
     private double[][][] _weights = Array.Empty<double[][]>();
 
-    public NeuralNetwork() : this(new NeuralNetworkConfiguration())
+    public NeuralNetwork(NeuralNetworkConfiguration? configuration = null)
     {
-    }
+        _configuration = configuration ?? new NeuralNetworkConfiguration();
 
-    public NeuralNetwork(NeuralNetworkConfiguration configuration)
-    {
-        _configuration = configuration;
-
-        List<int> sizes = configuration.HiddenLayers.ToList();
-        sizes.Insert(0, configuration.InputSize);
-        sizes.Add(configuration.OutputSize);
+        List<int> sizes = _configuration.HiddenLayers.ToList();
+        sizes.Insert(0, _configuration.InputSize);
+        sizes.Add(_configuration.OutputSize);
 
         _sizes = sizes.ToArray();
         _errorCheckInterval = 1;
@@ -47,7 +41,7 @@ public class NeuralNetwork
         _adjustWeights = AdjustWeights;
     }
 
-    public NeuralNetworkState Train(NeuralNetworkTrainingOptions options,
+    private NeuralNetworkState Train(NeuralNetworkTrainingOptions options,
         params TrainingDatum[] data)
     {
         NeuralNetworkPreparedTrainingData preparedData = PrepareTraining(data, options);
@@ -61,6 +55,14 @@ public class NeuralNetwork
         }
 
         return preparedData.Status;
+    }
+
+    public NeuralNetworkState Train(params TrainingDatum[] data)
+    {
+        return Train(
+            _configuration.TrainingOptions ?? new NeuralNetworkTrainingOptions(),
+            data
+        );
     }
 
     private bool TrainingTick(TrainingDatum[] data,
@@ -107,6 +109,7 @@ public class NeuralNetwork
     private double CalculateTrainingError(TrainingDatum[] data)
     {
         double sum = 0;
+
         for (var i = 0; i < data.Length; ++i)
         {
             sum += TrainPattern(data[i], true);
@@ -172,14 +175,6 @@ public class NeuralNetwork
                 activeBiases[node] += learningRate * delta;
             }
         }
-    }
-
-    public NeuralNetworkState Train(params TrainingDatum[] data)
-    {
-        return Train(
-            _configuration.TrainingOptions ?? new NeuralNetworkTrainingOptions(),
-            data
-        );
     }
 
     private NeuralNetworkPreparedTrainingData PrepareTraining(TrainingDatum[] data,

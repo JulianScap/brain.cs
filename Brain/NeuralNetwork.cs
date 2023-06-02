@@ -291,7 +291,7 @@ public class NeuralNetwork
         SetActivation();
         if (_trainOpts.Praxis == Constant.Adam)
         {
-           SetupAdam();
+            SetupAdam();
         }
     }
 
@@ -551,5 +551,59 @@ public class NeuralNetwork
     private bool IsRunnable()
     {
         return _sizes.Length > 0;
+    }
+
+    public NeuralNetworkExport Export()
+    {
+        if (!IsRunnable())
+        {
+            Initialize();
+        }
+
+        double[][][] jsonLayerWeights =
+            _weights.Select(layerLayerWeights =>
+                    layerLayerWeights.Select(
+                            layerWeights => layerWeights.ToArray())
+                        .ToArray())
+                .ToArray();
+
+        double[][] jsonLayerBiases = _biases.Select(layerBiases =>
+                layerBiases.ToArray()
+            )
+            .ToArray();
+
+        var layers = new List<Layer>();
+        int outputLength = _sizes.Length - 1;
+
+        for (var i = 0; i <= outputLength; i++)
+        {
+            layers.Add(new Layer
+            {
+                Weights = jsonLayerWeights.SafeGet(i) ?? Array.Empty<double[]>(),
+                Biases = jsonLayerBiases.SafeGet(i) ?? Array.Empty<double>()
+            });
+        }
+
+        return new NeuralNetworkExport
+        {
+            Type = nameof(NeuralNetwork),
+            Sizes = _sizes.ToArray(),
+            Layers = layers,
+            Options = _configuration,
+            TrainOpt = new NeuralNetworkTrainingOptions
+            {
+                ActivationType = _trainOpts.ActivationType,
+                Iteration = _trainOpts.Iteration,
+                ErrorThresh = _trainOpts.ErrorThresh,
+                LeakyReluAlpha = _trainOpts.LeakyReluAlpha,
+                LearningRate = _trainOpts.LearningRate,
+                Momentum = _trainOpts.Momentum,
+                Timeout = _trainOpts.Timeout,
+                Praxis = _trainOpts.Praxis,
+                Beta1 = _trainOpts.Beta1,
+                Beta2 = _trainOpts.Beta2,
+                Epsilon = _trainOpts.Epsilon
+            }
+        };
     }
 }

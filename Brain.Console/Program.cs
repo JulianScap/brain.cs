@@ -47,3 +47,5 @@ Console.WriteLine(nn.Run(ArrayHelper.ToArray<double>(0, 0))[0]);
 Console.WriteLine(nn.Run(ArrayHelper.ToArray<double>(1, 0))[0]);
 Console.WriteLine(nn.Run(ArrayHelper.ToArray<double>(0, 1))[0]);
 Console.WriteLine(nn.Run(ArrayHelper.ToArray<double>(1, 1))[0]);
+
+Console.WriteLine(JsonConvert.SerializeObject(nn.Export()));

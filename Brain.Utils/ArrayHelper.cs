@@ -28,11 +28,11 @@ public static class ArrayHelper
         return sum / errors.Length;
     }
 
-    public static T? SafeGet<T>(this T[] array,
+    public static T? SafeGet<T>(this IList<T> array,
         int index)
         where T : class
     {
-        return index < array.Length ? array[index] : null;
+        return index < array.Count ? array[index] : null;
     }
 
     public static T[] ToArray<T>(params T[] things)

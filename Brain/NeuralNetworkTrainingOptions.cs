@@ -1,3 +1,6 @@
+using System.Reflection.Metadata;
+using Brain.Helpers;
+
 namespace Brain;
 
 public class NeuralNetworkTrainingOptions
@@ -22,4 +25,33 @@ public class NeuralNetworkTrainingOptions
     public double Beta1 { get; set; } = 0.9f;
     public double Beta2 { get; set; } = 0.999f;
     public double Epsilon { get; set; } = 1e-8f;
+
+    public readonly string Praxis = Constant.Adam;
+
+    public void ValidateTrainingOptions()
+    {
+        ActivationType.IsValidEnum(nameof(ActivationType));
+        Iteration.StrictlyPositive(nameof(Iteration));
+        ErrorThresh.InRangeExclusive(0, 1, nameof(ErrorThresh));
+
+        if (Log)
+        {
+            LogAction.NotNull(nameof(LogAction));
+            LogPeriod.StrictlyPositive(nameof(LogPeriod));
+        }
+
+        LeakyReluAlpha.InRangeExclusive(0, 1, nameof(LeakyReluAlpha));
+        LearningRate.InRangeExclusive(0, 1, nameof(LearningRate));
+        Momentum.InRangeExclusive(0, 1, nameof(Momentum));
+
+        if (Callback != null)
+        {
+            CallbackPeriod.StrictlyPositive(nameof(CallbackPeriod));
+        }
+
+        Timeout.StrictlyPositiveOrNull(nameof(Timeout));
+        Beta1.InRangeExclusive(0, 1, nameof(Beta1));
+        Beta2.InRangeExclusive(0, 1, nameof(Beta2));
+        Epsilon.InRangeExclusive(0, 1, nameof(Epsilon));
+    }
 }

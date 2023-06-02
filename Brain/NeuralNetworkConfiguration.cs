@@ -6,5 +6,5 @@ public class NeuralNetworkConfiguration
     public int InputSize { get; set; }
     public int OutputSize { get; set; }
     public int BinaryThresh { get; set; }
-    public NeuralNetworkTrainingOptions TrainingOptions { get; set; }
+    public NeuralNetworkTrainingOptions? TrainingOptions { get; set; }
 }

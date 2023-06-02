@@ -72,7 +72,7 @@ public class NeuralNetwork
         Action<NeuralNetworkState>? callback = _trainOpts.Callback;
         int callbackPeriod = _trainOpts.CallbackPeriod;
         double errorThresh = _trainOpts.ErrorThresh;
-        double iterations = _trainOpts.Epsilon;
+        double iterations = _trainOpts.Iteration;
         bool log = _trainOpts.Log;
         Action<NeuralNetworkState>? logAction = _trainOpts.LogAction;
         int logPeriod = _trainOpts.LogPeriod;
@@ -391,48 +391,48 @@ public class NeuralNetwork
                 _calculateDeltas = CalculateDeltasSigmoid;
                 break;
             case ActivationType.Relu:
-                _runInput = this.RunInputRelu;
-                _calculateDeltas = this.CalculateDeltasRelu;
+                _runInput = RunInputRelu;
+                _calculateDeltas = CalculateDeltasRelu;
                 break;
             case ActivationType.LeakyRelu:
-                _runInput = this.RunInputLeakyRelu;
-                _calculateDeltas = this.CalculateDeltasLeakyRelu;
+                _runInput = RunInputLeakyRelu;
+                _calculateDeltas = CalculateDeltasLeakyRelu;
                 break;
             case ActivationType.Tanh:
-                _runInput = this.RunInputTanh;
-                _calculateDeltas = this.CalculateDeltasTanh;
+                _runInput = RunInputTanh;
+                _calculateDeltas = CalculateDeltasTanh;
                 break;
             default:
                 throw new BrainException($"Unknown activation ${value}");
         }
     }
 
-    private void CalculateDeltasTanh(double[] obj)
+    private void CalculateDeltasTanh(double[] target)
     {
         throw new NotImplementedException();
     }
 
-    private double[] RunInputTanh(double[] arg)
+    private double[] RunInputTanh(double[] input)
     {
         throw new NotImplementedException();
     }
 
-    private void CalculateDeltasLeakyRelu(double[] obj)
+    private void CalculateDeltasLeakyRelu(double[] target)
     {
         throw new NotImplementedException();
     }
 
-    private double[] RunInputLeakyRelu(double[] arg)
+    private double[] RunInputLeakyRelu(double[] input)
     {
         throw new NotImplementedException();
     }
 
-    private void CalculateDeltasRelu(double[] obj)
+    private void CalculateDeltasRelu(double[] target)
     {
         throw new NotImplementedException();
     }
 
-    private double[] RunInputRelu(double[] arg)
+    private double[] RunInputRelu(double[] input)
     {
         throw new NotImplementedException();
     }

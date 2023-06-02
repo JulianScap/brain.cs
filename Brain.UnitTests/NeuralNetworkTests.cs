@@ -1,3 +1,4 @@
+using Brain.Models;
 using FluentAssertions;
 
 namespace Brain.UnitTests;
@@ -37,7 +38,20 @@ public class NeuralNetworkTests
     [Fact]
     public void Train_ShouldBeCorrect()
     {
-        var nn = new NeuralNetwork();
+        var nn = new NeuralNetwork(new NeuralNetworkConfiguration
+        {
+            HiddenLayers = new[]
+            {
+                3
+            },
+            InputSize = 2,
+            OutputSize = 1,
+            BinaryThresh = 0.5,
+            TrainingOptions = new NeuralNetworkTrainingOptions
+            {
+                ActivationType = ActivationType.Sigmoid,
+            }
+        });
 
         nn.Train(new TrainingDatum
             {
@@ -68,7 +82,7 @@ public class NeuralNetworkTests
         });
 
         result.Should().NotBeNull().And.HaveCount(1);
-        // To fix later: result[0].Should().BeGreaterThan(0.9);
+        result[0].Should().BeGreaterThan(0.9);
     }
 
     private static double[] Array(params double[] ints)

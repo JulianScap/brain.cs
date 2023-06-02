@@ -10,7 +10,7 @@ public static class Validation
     {
         if (!Enum.IsDefined(typeof(T), value))
         {
-            throw new NeuralNetworkException($"{typeof(T).FullName} does not support {value}");
+            throw new BrainException($"{typeof(T).FullName} does not support {value}");
         }
     }
 
@@ -32,7 +32,7 @@ public static class Validation
     {
         if (value < min)
         {
-            throw new NeuralNetworkException($"{propertyName}: {value} should be greater than {min}");
+            throw new BrainException($"{propertyName}: {value} should be greater than {min}");
         }
     }
 
@@ -43,7 +43,7 @@ public static class Validation
     {
         if (value <= min || value >= max)
         {
-            throw new NeuralNetworkException($"{propertyName}: {value} should be in range ({min}..{max})");
+            throw new BrainException($"{propertyName}: {value} should be in range ({min}..{max})");
         }
     }
 
@@ -52,7 +52,7 @@ public static class Validation
     {
         if (that == null)
         {
-            throw new NeuralNetworkException($"{propertyName}: should not be null");
+            throw new BrainException($"{propertyName}: should not be null");
         }
     }
 }

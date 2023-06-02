@@ -107,12 +107,12 @@ public class NeuralNetwork
 
             if (input.Length != inputSize)
             {
-                throw new NeuralNetworkException($"input at index ${i} length ${input.Length} must be ${inputSize}");
+                throw new BrainException($"input at index ${i} length ${input.Length} must be ${inputSize}");
             }
 
             if (output.Length != outputSize)
             {
-                throw new NeuralNetworkException($"output at index ${i} length ${output.Length} must be ${outputSize}");
+                throw new BrainException($"output at index ${i} length ${output.Length} must be ${outputSize}");
             }
         }
     }
@@ -147,7 +147,7 @@ public class NeuralNetwork
     {
         if (_sizes.IsNullOrEmpty())
         {
-            throw new NeuralNetworkException("Sizes must be set before initializing");
+            throw new BrainException("Sizes must be set before initializing");
         }
 
         _outputLayer = _sizes.Length - 1;
@@ -295,7 +295,7 @@ public class NeuralNetwork
             //     _calculateDeltas = this._calculateDeltasTanh;
             //     break;
             default:
-                throw new NeuralNetworkException($"Unknown activation ${value}");
+                throw new BrainException($"Unknown activation ${value}");
         }
     }
 
@@ -363,7 +363,7 @@ public class NeuralNetwork
 
         if (output == null)
         {
-            throw new NeuralNetworkException("output was empty");
+            throw new BrainException("output was empty");
         }
 
         return output;
@@ -387,7 +387,7 @@ public class NeuralNetwork
     {
         if (!_isRunnable)
         {
-            throw new NeuralNetworkException("network not runnable");
+            throw new BrainException("network not runnable");
         }
     }
 }

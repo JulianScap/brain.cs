@@ -1,5 +1,7 @@
 using Brain.Models;
+using Brain.Utils;
 using FluentAssertions;
+using Newtonsoft.Json;
 
 namespace Brain.UnitTests;
 
@@ -17,7 +19,7 @@ public class NeuralNetworkTests
     {
         NeuralNetwork nn = GetAndTrainXorNetwork();
 
-        double[] result = nn.Run(ToArray(0, 1));
+        double[] result = nn.Run(ArrayHelper.ToArray<double>(0, 1));
 
         result.Should().NotBeNull().And.HaveCount(1);
         result[0].Should().BeGreaterThan(0.9);
@@ -31,42 +33,36 @@ public class NeuralNetworkTests
             {
                 3
             },
-            InputSize = 2,
-            OutputSize = 1,
-            BinaryThresh = 0.5,
             TrainingOptions = new NeuralNetworkTrainingOptions
             {
                 ActivationType = ActivationType.Sigmoid,
+                LogAction = details => Console.WriteLine("Log " + JsonConvert.SerializeObject(details)),
+                Callback = details => Console.WriteLine("Callback " + JsonConvert.SerializeObject(details))
             }
         });
 
         nn.Train(new TrainingDatum
             {
-                Input = ToArray(0, 0),
-                Output = ToArray(0)
+                Input = ArrayHelper.ToArray<double>(0, 0),
+                Output = ArrayHelper.ToArray<double>(0)
             },
             new TrainingDatum
             {
-                Input = ToArray(0, 1),
-                Output = ToArray(1)
+                Input = ArrayHelper.ToArray<double>(0, 1),
+                Output = ArrayHelper.ToArray<double>(1)
             },
             new TrainingDatum
             {
-                Input = ToArray(1, 0),
-                Output = ToArray(1)
+                Input = ArrayHelper.ToArray<double>(1, 0),
+                Output = ArrayHelper.ToArray<double>(1)
             },
             new TrainingDatum
             {
-                Input = ToArray(1, 1),
-                Output = ToArray(0)
+                Input = ArrayHelper.ToArray<double>(1, 1),
+                Output = ArrayHelper.ToArray<double>(0)
             }
         );
 
         return nn;
-    }
-
-    private static double[] ToArray(params double[] ints)
-    {
-        return ints;
     }
 }

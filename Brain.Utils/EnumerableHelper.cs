@@ -1,4 +1,4 @@
-namespace Brain.Helpers;
+namespace Brain.Utils;
 
 public static class EnumerableHelper
 {

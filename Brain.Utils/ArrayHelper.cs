@@ -1,4 +1,4 @@
-namespace Brain.Helpers;
+namespace Brain.Utils;
 
 public static class ArrayHelper
 {
@@ -33,5 +33,10 @@ public static class ArrayHelper
         where T : class
     {
         return index < array.Length ? array[index] : null;
+    }
+
+    public static T[] ToArray<T>(params T[] things)
+    {
+        return things;
     }
 }

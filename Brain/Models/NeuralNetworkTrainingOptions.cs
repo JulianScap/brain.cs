@@ -1,14 +1,13 @@
-using Brain.Helpers;
+using Brain.Utils;
 
 namespace Brain.Models;
 
 public class NeuralNetworkTrainingOptions
 {
-    public readonly string Praxis = Constant.Adam;
+    public string Praxis { get; set; } = string.Empty;
     public ActivationType ActivationType { get; set; } = ActivationType.Sigmoid;
     public int Iteration { get; set; } = 20_000;
     public double ErrorThresh { get; set; } = 0.005f;
-    public bool Log { get; set; } = false;
     public Action<NeuralNetworkState>? LogAction { get; set; }
     public int LogPeriod { get; set; } = 10;
     public double LeakyReluAlpha { get; set; } = 0.01f;
@@ -32,7 +31,7 @@ public class NeuralNetworkTrainingOptions
         Iteration.StrictlyPositive(nameof(Iteration));
         ErrorThresh.InRangeExclusive(0, 1, nameof(ErrorThresh));
 
-        if (Log)
+        if (LogPeriod != null)
         {
             LogPeriod.StrictlyPositive(nameof(LogPeriod));
         }

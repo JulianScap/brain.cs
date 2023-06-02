@@ -6,8 +6,4 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
-    <ItemGroup>
-      <ProjectReference Include="..\Brain.Utils\Brain.Utils.csproj" />
-    </ItemGroup>
-
 </Project>

@@ -1,7 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
-using Brain.Models;
 
-namespace Brain.Helpers;
+namespace Brain.Utils;
 
 public static class Validation
 {

@@ -1,6 +1,6 @@
 using System.Reflection;
 
-namespace Brain.Helpers;
+namespace Brain.Utils;
 
 public static class MergeHelper
 {

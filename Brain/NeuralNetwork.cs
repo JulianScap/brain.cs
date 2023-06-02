@@ -1,5 +1,5 @@
-using Brain.Helpers;
 using Brain.Models;
+using Brain.Utils;
 
 namespace Brain;
 
@@ -73,7 +73,6 @@ public class NeuralNetwork
         int callbackPeriod = _trainOpts.CallbackPeriod;
         double errorThresh = _trainOpts.ErrorThresh;
         double iterations = _trainOpts.Iteration;
-        bool log = _trainOpts.Log;
         Action<NeuralNetworkState>? logAction = _trainOpts.LogAction;
         int logPeriod = _trainOpts.LogPeriod;
 
@@ -84,10 +83,10 @@ public class NeuralNetwork
 
         status.Iterations++;
 
-        if (log && status.Iterations % logPeriod == 0)
+        if (logAction != null && status.Iterations % logPeriod == 0)
         {
             status.Error = CalculateTrainingError(data);
-            logAction?.Invoke(status);
+            logAction(status);
         }
         else if (status.Iterations % _errorCheckInterval == 0)
         {
@@ -292,7 +291,7 @@ public class NeuralNetwork
         SetActivation();
         if (_trainOpts.Praxis == Constant.Adam)
         {
-           //SetupAdam();
+           SetupAdam();
         }
     }
 
@@ -512,15 +511,6 @@ public class NeuralNetwork
         NeuralNetworkTrainingOptions merged = options.Merge(_configuration.TrainingOptions);
         merged.ValidateTrainingOptions();
         _trainOpts = merged;
-        SetLogMethod();
-    }
-
-    private void SetLogMethod()
-    {
-        if (_trainOpts.Log && _trainOpts.LogAction == null)
-        {
-            _trainOpts.LogAction = status => Console.WriteLine($"Iterations: {status.Iterations}, Training error: {status.Error}");
-        }
     }
 
     private double[] RunInput(double[] input)

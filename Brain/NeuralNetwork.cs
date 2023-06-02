@@ -7,25 +7,25 @@ public class NeuralNetwork
 {
     private readonly NeuralNetworkConfiguration _configuration;
     private Action _adjustWeights;
-    private double[][] _biasChangesHigh;
-    private double[][] _biasChangesLow;
-    private double[][] _biases;
+    private double[][] _biasChangesHigh = Array.Empty<double[]>();
+    private double[][] _biasChangesLow = Array.Empty<double[]>();
+    private double[][] _biases = Array.Empty<double[]>();
     private Action<double[]> _calculateDeltas;
-    private double[][][] _changes;
-    private double[][][] _changesHigh;
-    private double[][][] _changesLow;
-    private double[][] _deltas;
+    private double[][][] _changes = Array.Empty<double[][]>();
+    private double[][][] _changesHigh = Array.Empty<double[][]>();
+    private double[][][] _changesLow = Array.Empty<double[][]>();
+    private double[][] _deltas = Array.Empty<double[]>();
     private readonly int _errorCheckInterval;
-    private double[][] _errors;
+    private double[][] _errors = Array.Empty<double[]>();
     private int _inputLookupLength;
     private int _iterations;
     private int _outputLayer = -1;
     private int _outputLookupLength;
-    private double[][] _outputs;
+    private double[][] _outputs = Array.Empty<double[]>();
     private Func<double[], double[]> _runInput;
     private int[] _sizes;
-    private NeuralNetworkTrainingOptions _trainOpts;
-    private double[][][] _weights;
+    private NeuralNetworkTrainingOptions _trainOpts = new NeuralNetworkTrainingOptions();
+    private double[][][] _weights = Array.Empty<double[][]>();
 
     public NeuralNetwork() : this(new NeuralNetworkConfiguration())
     {

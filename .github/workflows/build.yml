@@ -1,4 +1,4 @@
-name: dotnet build , test and SonarCloud
+name: dotnet build, test and SonarCloud
 
 on:
   push:
@@ -47,7 +47,7 @@ jobs:
         run:
           dotnet tool install --global dotnet-coverage
 
-      - name: Build and analyze
+      - name: Start Sonar analysis
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
@@ -64,7 +64,7 @@ jobs:
       - name: Test
         run: dotnet test --no-restore --verbosity normal --collect "Code Coverage"
 
-      - name: Install dotnet-coverage
+      - name: Report Sonar analysis
         shell: powershell
         run:
           .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"

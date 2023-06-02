@@ -1,30 +1,31 @@
 using Brain.Helpers;
+using Brain.Models;
 
 namespace Brain;
 
 public class NeuralNetwork
 {
     private readonly NeuralNetworkConfiguration _configuration;
-    private NeuralNetworkTrainingOptions _trainOpts;
-    private int[] _sizes;
-    private bool _isRunnable;
-    private int _inputLookupLength;
-    private int _outputLookupLength;
-    private int _outputLayer = -1;
-    private double[][] _biases;
-    private double[][][] _changes;
-    private double[][] _deltas;
-    private double[][] _outputs;
-    private double[][] _errors;
-    private double[][][] _weights;
-    private Func<double[], double[]> _runInput;
-    private Action<double[]> _calculateDeltas;
-    private double[][] _biasChangesLow;
+    private Action _adjustWeights;
     private double[][] _biasChangesHigh;
+    private double[][] _biasChangesLow;
+    private double[][] _biases;
+    private Action<double[]> _calculateDeltas;
+    private double[][][] _changes;
     private double[][][] _changesHigh;
     private double[][][] _changesLow;
+    private double[][] _deltas;
+    private double[][] _errors;
+    private int _inputLookupLength;
+    private bool _isRunnable;
     private int _iterations;
-    private Action _adjustWeights;
+    private int _outputLayer = -1;
+    private int _outputLookupLength;
+    private double[][] _outputs;
+    private Func<double[], double[]> _runInput;
+    private int[] _sizes;
+    private NeuralNetworkTrainingOptions _trainOpts;
+    private double[][][] _weights;
 
 
     public NeuralNetwork() : this(new NeuralNetworkConfiguration())
@@ -87,11 +88,11 @@ public class NeuralNetwork
             Status = new NeuralNetworkState
             {
                 Error = 1,
-                Iterations = 0,
+                Iterations = 0
             },
             EndTime = options.Timeout.HasValue
                 ? DateTime.Now + TimeSpan.FromMilliseconds(options.Timeout.Value)
-                : null,
+                : null
         };
     }
 
@@ -119,7 +120,10 @@ public class NeuralNetwork
 
     private void VerifyIsInitialized(TrainingDatum[] data)
     {
-        if (_sizes.Length > 0 && _outputLayer > 0) return;
+        if (_sizes.Length > 0 && _outputLayer > 0)
+        {
+            return;
+        }
 
         var sizes = new List<int>
         {
@@ -256,7 +260,7 @@ public class NeuralNetwork
 
                     currentChangesLow[node][k] = changeLow;
                     currentChangesHigh[node][k] = changeHigh;
-                    currentWeights[node][k] += (learningRate * momentumCorrection) / (Math.Sqrt(gradientCorrection) + epsilon);
+                    currentWeights[node][k] += learningRate * momentumCorrection / (Math.Sqrt(gradientCorrection) + epsilon);
                 }
 
                 double biasGradient = currentDeltas[node];

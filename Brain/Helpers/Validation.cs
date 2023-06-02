@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using Brain.Models;
 
 namespace Brain.Helpers;
 

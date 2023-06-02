@@ -1,6 +1,6 @@
 using System.Runtime.Serialization;
 
-namespace Brain;
+namespace Brain.Models;
 
 [Serializable]
 public class BrainException : Exception

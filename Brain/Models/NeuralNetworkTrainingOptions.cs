@@ -1,10 +1,10 @@
-using System.Reflection.Metadata;
 using Brain.Helpers;
 
-namespace Brain;
+namespace Brain.Models;
 
 public class NeuralNetworkTrainingOptions
 {
+    public readonly string Praxis = Constant.Adam;
     public ActivationType ActivationType { get; set; } = ActivationType.Sigmoid;
     public int Iteration { get; set; } = 20_000;
     public double ErrorThresh { get; set; } = 0.005f;
@@ -18,15 +18,13 @@ public class NeuralNetworkTrainingOptions
     public int CallbackPeriod { get; set; } = 10;
 
     /// <summary>
-    /// Null for infinity
+    ///     Null for infinity
     /// </summary>
     public int? Timeout { get; set; }
 
     public double Beta1 { get; set; } = 0.9f;
     public double Beta2 { get; set; } = 0.999f;
     public double Epsilon { get; set; } = 1e-8f;
-
-    public readonly string Praxis = Constant.Adam;
 
     public void ValidateTrainingOptions()
     {

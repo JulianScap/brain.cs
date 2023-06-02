@@ -27,7 +27,6 @@ public class NeuralNetwork
     private NeuralNetworkTrainingOptions _trainOpts;
     private double[][][] _weights;
 
-
     public NeuralNetwork() : this(new NeuralNetworkConfiguration())
     {
     }
@@ -511,11 +510,26 @@ public class NeuralNetwork
         _calculateDeltas(output);
     }
 
-    public void Run(double[] input)
+    public double[] Run(double[] input)
     {
         if (!IsRunnable())
         {
             throw new BrainException("Network not runnable");
+        }
+
+        ValidateInput(input);
+        double[] rawOutput = _runInput(input);
+        var output = new double[rawOutput.Length];
+        Array.Copy(rawOutput, output, rawOutput.Length);
+        return output;
+    }
+
+    private void ValidateInput(double[] input)
+    {
+        int inputSize = _sizes[0];
+        if (input.Length != inputSize)
+        {
+            throw new BrainException($"input length ${input.Length} must match options.inputSize of ${inputSize}");
         }
     }
 

@@ -27,4 +27,11 @@ public static class ArrayHelper
 
         return sum / errors.Length;
     }
+
+    public static T? SafeGet<T>(this T[] array,
+        int index)
+        where T : class
+    {
+        return index < array.Length ? array[index] : null;
+    }
 }

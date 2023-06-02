@@ -15,7 +15,7 @@ public class NeuralNetwork
     private double[][][] _changesHigh;
     private double[][][] _changesLow;
     private double[][] _deltas;
-    private int _errorCheckInterval;
+    private readonly int _errorCheckInterval;
     private double[][] _errors;
     private int _inputLookupLength;
     private int _iterations;
@@ -41,9 +41,11 @@ public class NeuralNetwork
         sizes.Add(configuration.OutputSize);
 
         _sizes = sizes.ToArray();
+        _errorCheckInterval = 1;
 
         _runInput = RunInput;
         _calculateDeltas = CalculateDeltas;
+        _adjustWeights = AdjustWeights;
     }
 
     public NeuralNetworkState Train(NeuralNetworkTrainingOptions options,
@@ -130,7 +132,7 @@ public class NeuralNetwork
 
         // back propagate
         _calculateDeltas(value.Output);
-        AdjustWeights();
+        _adjustWeights();
 
         if (logErrorRate)
         {
@@ -262,14 +264,14 @@ public class NeuralNetwork
         }
 
         _outputLayer = _sizes.Length - 1;
-        _biases = new double[_outputLayer][];
-        _weights = new double[_outputLayer][][];
-        _outputs = new double[_outputLayer][];
+        _biases = new double[_sizes.Length][];
+        _weights = new double[_sizes.Length][][];
+        _outputs = new double[_sizes.Length][];
 
         // state for training
-        _deltas = new double[_outputLayer][];
-        _changes = new double[_outputLayer][][]; // for momentum
-        _errors = new double[_outputLayer][];
+        _deltas = new double[_sizes.Length][];
+        _changes = new double[_sizes.Length][][]; // for momentum
+        _errors = new double[_sizes.Length][];
 
         for (var layerIndex = 0; layerIndex <= _outputLayer; layerIndex++)
         {
@@ -302,10 +304,11 @@ public class NeuralNetwork
 
     private void SetupAdam()
     {
-        _biasChangesLow = new double[_outputLayer][];
-        _biasChangesHigh = new double[_outputLayer][];
-        _changesLow = new double[_outputLayer][][];
-        _changesHigh = new double[_outputLayer][][];
+        int arraySize = _outputLayer + 1;
+        _biasChangesLow = new double[arraySize][];
+        _biasChangesHigh = new double[arraySize][];
+        _changesLow = new double[arraySize][][];
+        _changesHigh = new double[arraySize][][];
         _iterations = 0;
 
         for (var layer = 0; layer <= _outputLayer; layer++)
@@ -418,7 +421,7 @@ public class NeuralNetwork
             double[] activeOutput = _outputs[layer];
             double[] activeError = _errors[layer];
             double[] activeDeltas = _deltas[layer];
-            double[][] nextLayer = _weights[layer + 1];
+            double[][]? nextLayer = _weights.SafeGet(layer + 1);
 
             for (var node = 0; node < activeSize; node++)
             {
@@ -434,7 +437,7 @@ public class NeuralNetwork
                     double[] deltas = _deltas[layer + 1];
                     for (var k = 0; k < deltas.Length; k++)
                     {
-                        error += deltas[k] * nextLayer[k][node];
+                        error += deltas[k] * (nextLayer?[k][node] ?? 0);
                     }
                 }
 

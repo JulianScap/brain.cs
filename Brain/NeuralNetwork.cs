@@ -390,21 +390,51 @@ public class NeuralNetwork
                 _runInput = RunInputSigmoid;
                 _calculateDeltas = CalculateDeltasSigmoid;
                 break;
-            // case ActivationType.Relu:
-            //     _runInput = this._runInputRelu;
-            //     _calculateDeltas = this._calculateDeltasRelu;
-            //     break;
-            // case ActivationType.LeakyRelu:
-            //     _runInput = this._runInputLeakyRelu;
-            //     _calculateDeltas = this._calculateDeltasLeakyRelu;
-            //     break;
-            // case ActivationType.Tanh:
-            //     _runInput = this._runInputTanh;
-            //     _calculateDeltas = this._calculateDeltasTanh;
-            //     break;
+            case ActivationType.Relu:
+                _runInput = this.RunInputRelu;
+                _calculateDeltas = this.CalculateDeltasRelu;
+                break;
+            case ActivationType.LeakyRelu:
+                _runInput = this.RunInputLeakyRelu;
+                _calculateDeltas = this.CalculateDeltasLeakyRelu;
+                break;
+            case ActivationType.Tanh:
+                _runInput = this.RunInputTanh;
+                _calculateDeltas = this.CalculateDeltasTanh;
+                break;
             default:
                 throw new BrainException($"Unknown activation ${value}");
         }
+    }
+
+    private void CalculateDeltasTanh(double[] obj)
+    {
+        throw new NotImplementedException();
+    }
+
+    private double[] RunInputTanh(double[] arg)
+    {
+        throw new NotImplementedException();
+    }
+
+    private void CalculateDeltasLeakyRelu(double[] obj)
+    {
+        throw new NotImplementedException();
+    }
+
+    private double[] RunInputLeakyRelu(double[] arg)
+    {
+        throw new NotImplementedException();
+    }
+
+    private void CalculateDeltasRelu(double[] obj)
+    {
+        throw new NotImplementedException();
+    }
+
+    private double[] RunInputRelu(double[] arg)
+    {
+        throw new NotImplementedException();
     }
 
     private void CalculateDeltasSigmoid(double[] target)

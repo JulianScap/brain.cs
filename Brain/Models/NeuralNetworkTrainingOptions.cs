@@ -31,7 +31,7 @@ public class NeuralNetworkTrainingOptions
         Iteration.StrictlyPositive(nameof(Iteration));
         ErrorThresh.InRangeExclusive(0, 1, nameof(ErrorThresh));
 
-        if (LogPeriod != null)
+        if (LogAction != null)
         {
             LogPeriod.StrictlyPositive(nameof(LogPeriod));
         }

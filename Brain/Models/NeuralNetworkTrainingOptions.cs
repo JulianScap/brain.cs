@@ -34,7 +34,6 @@ public class NeuralNetworkTrainingOptions
 
         if (Log)
         {
-            LogAction.NotNull(nameof(LogAction));
             LogPeriod.StrictlyPositive(nameof(LogPeriod));
         }
 

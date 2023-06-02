@@ -378,20 +378,22 @@ public class NeuralNetwork
         NeuralNetworkTrainingOptions merged = options.Merge(_configuration.TrainingOptions);
         merged.ValidateTrainingOptions();
         _trainOpts = merged;
-        SetLogMethod(_trainOpts.Log, _trainOpts.LogAction);
+        SetLogMethod();
     }
 
-    private void SetLogMethod(bool enabled,
-        Action<NeuralNetworkState>? action)
+    private void SetLogMethod()
     {
-        throw new NotImplementedException();
+        if (_trainOpts.Log && _trainOpts.LogAction == null)
+        {
+            _trainOpts.LogAction = status => Console.WriteLine($"Iterations: {status.Iterations}, Training error: {status.Error}");
+        }
     }
 
     public void Run(double[] trainingDatum)
     {
         if (!_isRunnable)
         {
-            throw new BrainException("network not runnable");
+            throw new BrainException("Network not runnable");
         }
     }
 }

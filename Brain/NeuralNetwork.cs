@@ -292,7 +292,7 @@ public class NeuralNetwork
         SetActivation();
         if (_trainOpts.Praxis == Constant.Adam)
         {
-            SetupAdam();
+           //SetupAdam();
         }
     }
 

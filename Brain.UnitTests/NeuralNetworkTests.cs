@@ -17,17 +17,13 @@ public class NeuralNetworkTests
     {
         NeuralNetwork nn = GetAndTrainXorNetwork();
 
-        double[] result = nn.Run(new double[]
-        {
-            0,
-            1
-        });
+        double[] result = nn.Run(ToArray(0, 1));
 
         result.Should().NotBeNull().And.HaveCount(1);
         result[0].Should().BeGreaterThan(0.9);
     }
 
-    private NeuralNetwork GetAndTrainXorNetwork()
+    private static NeuralNetwork GetAndTrainXorNetwork()
     {
         var nn = new NeuralNetwork(new NeuralNetworkConfiguration
         {
@@ -46,30 +42,30 @@ public class NeuralNetworkTests
 
         nn.Train(new TrainingDatum
             {
-                Input = Array(0, 0),
-                Output = Array(0)
+                Input = ToArray(0, 0),
+                Output = ToArray(0)
             },
             new TrainingDatum
             {
-                Input = Array(0, 1),
-                Output = Array(1)
+                Input = ToArray(0, 1),
+                Output = ToArray(1)
             },
             new TrainingDatum
             {
-                Input = Array(1, 0),
-                Output = Array(1)
+                Input = ToArray(1, 0),
+                Output = ToArray(1)
             },
             new TrainingDatum
             {
-                Input = Array(1, 1),
-                Output = Array(0)
+                Input = ToArray(1, 1),
+                Output = ToArray(0)
             }
         );
 
         return nn;
     }
 
-    private static double[] Array(params double[] ints)
+    private static double[] ToArray(params double[] ints)
     {
         return ints;
     }

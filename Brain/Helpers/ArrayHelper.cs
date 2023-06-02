@@ -15,4 +15,16 @@ public static class ArrayHelper
 
         return result;
     }
+
+    public static double MeanSquaredError(double[] errors)
+    {
+        var sum = 0d;
+
+        for (var i = 0; i < errors.Length; i++)
+        {
+            sum += errors[i] * errors[i];
+        }
+
+        return sum / errors.Length;
+    }
 }

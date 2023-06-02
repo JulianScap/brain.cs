@@ -15,9 +15,9 @@ public class NeuralNetwork
     private double[][][] _changesHigh;
     private double[][][] _changesLow;
     private double[][] _deltas;
+    private int _errorCheckInterval;
     private double[][] _errors;
     private int _inputLookupLength;
-    private bool _isRunnable;
     private int _iterations;
     private int _outputLayer = -1;
     private int _outputLookupLength;
@@ -41,6 +41,9 @@ public class NeuralNetwork
         sizes.Add(configuration.OutputSize);
 
         _sizes = sizes.ToArray();
+
+        _runInput = RunInput;
+        _calculateDeltas = CalculateDeltas;
     }
 
     public NeuralNetworkState Train(NeuralNetworkTrainingOptions options,
@@ -59,11 +62,115 @@ public class NeuralNetwork
         return preparedData.Status;
     }
 
-    private bool TrainingTick(object preparedData,
+    private bool TrainingTick(TrainingDatum[] data,
         NeuralNetworkState status,
         DateTime? endTime)
     {
-        throw new NotImplementedException();
+        Action<NeuralNetworkState>? callback = _trainOpts.Callback;
+        int callbackPeriod = _trainOpts.CallbackPeriod;
+        double errorThresh = _trainOpts.ErrorThresh;
+        double iterations = _trainOpts.Epsilon;
+        bool log = _trainOpts.Log;
+        Action<NeuralNetworkState>? logAction = _trainOpts.LogAction;
+        int logPeriod = _trainOpts.LogPeriod;
+
+        if (status.Iterations >= iterations || status.Error <= errorThresh || DateTime.Now >= endTime)
+        {
+            return false;
+        }
+
+        status.Iterations++;
+
+        if (log && status.Iterations % logPeriod == 0)
+        {
+            status.Error = CalculateTrainingError(data);
+            logAction?.Invoke(status);
+        }
+        else if (status.Iterations % _errorCheckInterval == 0)
+        {
+            status.Error = CalculateTrainingError(data);
+        }
+        else
+        {
+            TrainPatterns(data);
+        }
+
+        if (callback != null && status.Iterations % callbackPeriod == 0)
+        {
+            callback(status.Clone());
+        }
+
+        return true;
+    }
+
+    private double CalculateTrainingError(TrainingDatum[] data)
+    {
+        double sum = 0;
+        for (var i = 0; i < data.Length; ++i)
+        {
+            sum += TrainPattern(data[i], true);
+        }
+
+        return sum / data.Length;
+    }
+
+    private void TrainPatterns(TrainingDatum[] data)
+    {
+        for (var i = 0; i < data.Length; i++)
+        {
+            TrainPattern(data[i]);
+        }
+    }
+
+    private double TrainPattern(TrainingDatum value,
+        bool logErrorRate = false)
+    {
+        // forward propagate
+        _runInput(value.Input);
+
+        // back propagate
+        _calculateDeltas(value.Output);
+        AdjustWeights();
+
+        if (logErrorRate)
+        {
+            return ArrayHelper.MeanSquaredError(_errors[_outputLayer]);
+        }
+
+        return 0d;
+    }
+
+    private void AdjustWeights()
+    {
+        double learningRate = _trainOpts.LearningRate;
+        double momentum = _trainOpts.Momentum;
+
+        for (var layer = 1; layer <= _outputLayer; layer++)
+        {
+            double[] incoming = _outputs[layer - 1];
+            int activeSize = _sizes[layer];
+            double[] activeDelta = _deltas[layer];
+            double[][] activeChanges = _changes[layer];
+            double[][] activeWeights = _weights[layer];
+            double[] activeBiases = _biases[layer];
+
+            for (var node = 0; node < activeSize; node++)
+            {
+                double delta = activeDelta[node];
+
+                for (var k = 0; k < incoming.Length; k++)
+                {
+                    double change = activeChanges[node][k];
+
+                    change = learningRate * delta * incoming[k] + momentum * change;
+
+                    activeChanges[node][k] = change;
+                    activeWeights[node][k] += change;
+                }
+
+                activeBiases[node] += learningRate * delta;
+            }
+        }
     }
 
     public NeuralNetworkState Train(params TrainingDatum[] data)
@@ -389,11 +496,28 @@ public class NeuralNetwork
         }
     }
 
-    public void Run(double[] trainingDatum)
+    private double[] RunInput(double[] input)
     {
-        if (!_isRunnable)
+        SetActivation();
+        return _runInput(input);
+    }
+
+    private void CalculateDeltas(double[] output)
+    {
+        SetActivation();
+        _calculateDeltas(output);
+    }
+
+    public void Run(double[] input)
+    {
+        if (!IsRunnable())
         {
             throw new BrainException("Network not runnable");
         }
+    }
+
+    private bool IsRunnable()
+    {
+        return _sizes.Length > 0;
     }
 }

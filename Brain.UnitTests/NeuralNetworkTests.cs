@@ -26,12 +26,21 @@ public class NeuralNetworkTests
     }
 
     [Fact]
-    public void Train_ShouldExport()
+    public void Train_ShouldExportAndImport()
     {
         NeuralNetwork nn = GetAndTrainXorNetwork();
 
         Func<NeuralNetworkExport> toTest = () => nn.Export();
-        toTest.Should().NotThrow().Subject.Should().NotBeNull();
+        NeuralNetworkExport export = toTest.Should().NotThrow().Subject;
+
+        export.Should().NotBeNull();
+
+        NeuralNetwork imported = new NeuralNetwork().Import(export);
+
+        double[] result = imported.Run(ArrayHelper.ToArray<double>(0, 1));
+
+        result.Should().NotBeNull().And.HaveCount(1);
+        result[0].Should().BeGreaterThan(0.9);
     }
 
     private static NeuralNetwork GetAndTrainXorNetwork()

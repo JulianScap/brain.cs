@@ -53,7 +53,7 @@ NeuralNetworkExport export = nn.Export();
 Console.WriteLine(JsonConvert.SerializeObject(export));
 
 var imported = new NeuralNetwork();
-imported.FromJson(export);
+imported.Import(export);
 
 Console.WriteLine(imported.Run(ArrayHelper.ToArray<double>(0, 0))[0]);
 Console.WriteLine(imported.Run(ArrayHelper.ToArray<double>(1, 0))[0]);

@@ -622,7 +622,7 @@ public class NeuralNetwork
         };
     }
 
-    public NeuralNetwork FromJson(NeuralNetworkExport export)
+    public NeuralNetwork Import(NeuralNetworkExport export)
     {
         _configuration = new NeuralNetworkConfiguration().Merge(export.Options);
 

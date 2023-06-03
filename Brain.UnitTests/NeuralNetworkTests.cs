@@ -10,16 +10,16 @@ public class NeuralNetworkTests
     [Fact]
     public void Train_ShouldTrain()
     {
-        Action toTest = () => GetAndTrainXorNetwork();
+        Action toTest = () => TrainXorNetwork(GetNetwork());
         toTest.Should().NotThrow();
     }
 
     [Fact]
     public void Train_ShouldBeCorrect()
     {
-        NeuralNetwork nn = GetAndTrainXorNetwork();
+        NeuralNetwork network = TrainXorNetwork(GetNetwork());
 
-        double[] result = nn.Run(new[]
+        double[] result = network.Run(new[]
             {
                 0d,
                 1d
@@ -33,9 +33,9 @@ public class NeuralNetworkTests
     [Fact]
     public void Train_ShouldExportAndImport()
     {
-        NeuralNetwork nn = GetAndTrainXorNetwork();
+        NeuralNetwork network = TrainXorNetwork(GetNetwork());
 
-        Func<NeuralNetworkExport> toTest = () => nn.Export();
+        Func<NeuralNetworkExport> toTest = () => network.Export();
         NeuralNetworkExport export = toTest.Should().NotThrow().Subject;
 
         export.Should().NotBeNull();
@@ -48,7 +48,7 @@ public class NeuralNetworkTests
             1d
         });
 
-        double[] expected = nn.Run(new[]
+        double[] expected = network.Run(new[]
         {
             0d,
             1d
@@ -58,9 +58,9 @@ public class NeuralNetworkTests
         result[0].Should().BeApproximately(expected[0], double.Epsilon);
     }
 
-    private static NeuralNetwork GetAndTrainXorNetwork()
+    private static NeuralNetwork GetNetwork()
     {
-        var nn = new NeuralNetwork(new NeuralNetworkConfiguration
+        return new NeuralNetwork(new NeuralNetworkConfiguration
         {
             HiddenLayers = new[]
             {
@@ -73,8 +73,11 @@ public class NeuralNetworkTests
                 Callback = details => Console.WriteLine("Callback " + JsonConvert.SerializeObject(details))
             }
         });
+    }
 
-        nn.Train(new[]
+    private static NeuralNetwork TrainXorNetwork(NeuralNetwork network)
+    {
+        network.Train(new[]
             {
                 new TrainingDatum
                 {
@@ -115,6 +118,6 @@ public class NeuralNetworkTests
             }
         );
 
-        return nn;
+        return network;
     }
 }

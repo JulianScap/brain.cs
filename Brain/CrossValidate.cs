@@ -130,7 +130,7 @@ public class CrossValidate
         {
             throw new BrainException("No winning plan found");
         }
-        
+
         network.Import(winning.Network);
 
         return network;

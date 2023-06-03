@@ -1,6 +1,6 @@
 name: publish to nuget
 on:
-  workflow_dispatch: 
+  workflow_dispatch:
 
 jobs:
   publish:
@@ -12,8 +12,8 @@ jobs:
 
       - name: dotnet pack
         shell: powershell
-        run: dotnet pack --configuration Publish
+        run: dotnet pack --configuration Release
 
       - name: dotnet nuget push
         shell: powershell
-        run:  dotnet nuget push $_ --api-key "${{ secrets.NUGET_PUSH }}"
+        run: Get-ChildItem -r *.nupkg | ForEach-Object { $name = $_.FullName; "Pushing $name"; dotnet nuget push $name --api-key '${{ secrets.NUGET_PUSH }}' --source "https://api.nuget.org/v3/index.json" }

@@ -5,15 +5,17 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <AssemblyVersion>0.0.1.0</AssemblyVersion>
-        <PackageId>Brain.cs</PackageId>
-        <Version>0.0.1</Version>
+        <PackageId>Scap.Brain.cs</PackageId>
+        <Version>0.0.1-alpha</Version>
         <Authors>Julian Adler</Authors>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
         <PackageDescription>Port of https://github.com/BrainJS/brain.js</PackageDescription>
         <RepositoryUrl>https://github.com/JulianScap/brain.cs</RepositoryUrl>
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Newtonsoft.Json" Version="13.0.1"/>
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+        <None Include="../README.md" Pack="true" PackagePath="\" />
     </ItemGroup>
-
 </Project>

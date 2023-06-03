@@ -765,4 +765,9 @@ public class NeuralNetwork
             Accuracy = (trueNeg + truePos) / preparedData.Length
         };
     }
+
+    public static NeuralNetwork From(NeuralNetworkExport export)
+    {
+        return new NeuralNetwork().Import(export);
+    }
 }

@@ -1,11 +1,14 @@
 using Brain.Utils;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace Brain.Models;
 
 public class NeuralNetworkTrainingOptions
 {
-    public string Praxis { get; set; } = string.Empty;
+    [JsonConverter(typeof(StringEnumConverter))]
     public ActivationType ActivationType { get; set; } = ActivationType.Sigmoid;
+
     public int Iteration { get; set; } = 20_000;
     public double ErrorThresh { get; set; } = 0.005f;
     public Action<NeuralNetworkState>? LogAction { get; set; }
@@ -24,6 +27,8 @@ public class NeuralNetworkTrainingOptions
     public double Beta1 { get; set; } = 0.9f;
     public double Beta2 { get; set; } = 0.999f;
     public double Epsilon { get; set; } = 1e-8f;
+
+    public string? Praxis { get; set; }
 
     public NeuralNetworkTrainingOptions Export()
     {

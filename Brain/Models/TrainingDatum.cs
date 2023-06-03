@@ -1,4 +1,4 @@
-namespace Brain;
+namespace Brain.Models;
 
 public class TrainingDatum
 {

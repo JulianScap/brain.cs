@@ -74,41 +74,44 @@ public class NeuralNetworkTests
             }
         });
 
-        nn.Train(new TrainingDatum
+        nn.Train(new[]
             {
-                Input = new[]
+                new TrainingDatum
                 {
-                    0d,
-                    0d
+                    Input = new[]
+                    {
+                        0d,
+                        0d
+                    },
+                    Output = 0d.YieldToArray()
                 },
-                Output = 0d.YieldToArray()
-            },
-            new TrainingDatum
-            {
-                Input = new[]
+                new TrainingDatum
                 {
-                    0d,
-                    1d
+                    Input = new[]
+                    {
+                        0d,
+                        1d
+                    },
+                    Output = 1d.YieldToArray()
                 },
-                Output = 1d.YieldToArray()
-            },
-            new TrainingDatum
-            {
-                Input = new[]
+                new TrainingDatum
                 {
-                    1d,
-                    0d
+                    Input = new[]
+                    {
+                        1d,
+                        0d
+                    },
+                    Output = 1d.YieldToArray()
                 },
-                Output = 1d.YieldToArray()
-            },
-            new TrainingDatum
-            {
-                Input = new[]
+                new TrainingDatum
                 {
-                    1d,
-                    1d
-                },
-                Output = 0d.YieldToArray()
+                    Input = new[]
+                    {
+                        1d,
+                        1d
+                    },
+                    Output = 0d.YieldToArray()
+                }
             }
         );
 

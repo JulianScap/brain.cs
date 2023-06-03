@@ -43,8 +43,9 @@ public class NeuralNetwork
         _adjustWeights = AdjustWeights;
     }
 
-    private NeuralNetworkState Train(NeuralNetworkTrainingOptions options,
-        params TrainingDatum[] data)
+    private NeuralNetworkState Train(TrainingDatum[] data,
+        NeuralNetworkTrainingOptions options
+    )
     {
         NeuralNetworkPreparedTrainingData preparedData = PrepareTraining(data, options);
 
@@ -59,11 +60,11 @@ public class NeuralNetwork
         return preparedData.Status;
     }
 
-    public NeuralNetworkState Train(params TrainingDatum[] data)
+    public NeuralNetworkState Train(TrainingDatum[] data)
     {
         return Train(
-            _configuration.TrainingOptions ?? new NeuralNetworkTrainingOptions(),
-            data
+            data,
+            _configuration.TrainingOptions ?? new NeuralNetworkTrainingOptions()
         );
     }
 

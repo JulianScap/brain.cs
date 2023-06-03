@@ -25,6 +25,24 @@ public class NeuralNetworkTrainingOptions
     public double Beta2 { get; set; } = 0.999f;
     public double Epsilon { get; set; } = 1e-8f;
 
+    public NeuralNetworkTrainingOptions Export()
+    {
+        return new NeuralNetworkTrainingOptions
+        {
+            ActivationType = ActivationType,
+            Iteration = Iteration,
+            ErrorThresh = ErrorThresh,
+            LeakyReluAlpha = LeakyReluAlpha,
+            LearningRate = LearningRate,
+            Momentum = Momentum,
+            Timeout = Timeout,
+            Praxis = Praxis,
+            Beta1 = Beta1,
+            Beta2 = Beta2,
+            Epsilon = Epsilon
+        };
+    }
+
     public void ValidateTrainingOptions()
     {
         ActivationType.IsValidEnum(nameof(ActivationType));

@@ -25,6 +25,15 @@ public class NeuralNetworkTests
         result[0].Should().BeGreaterThan(0.9);
     }
 
+    [Fact]
+    public void Train_ShouldExport()
+    {
+        NeuralNetwork nn = GetAndTrainXorNetwork();
+
+        Func<NeuralNetworkExport> toTest = () => nn.Export();
+        toTest.Should().NotThrow().Subject.Should().NotBeNull();
+    }
+
     private static NeuralNetwork GetAndTrainXorNetwork()
     {
         var nn = new NeuralNetwork(new NeuralNetworkConfiguration

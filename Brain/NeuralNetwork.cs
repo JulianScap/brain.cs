@@ -1,8 +1,10 @@
+using System.Diagnostics.CodeAnalysis;
 using Brain.Models;
 using Brain.Utils;
 
 namespace Brain;
 
+[SuppressMessage("ReSharper", "CognitiveComplexity")]
 public class NeuralNetwork
 {
     private readonly NeuralNetworkConfiguration _configuration;
@@ -10,7 +12,7 @@ public class NeuralNetwork
     private Action _adjustWeights;
     private double[][] _biasChangesHigh = Array.Empty<double[]>();
     private double[][] _biasChangesLow = Array.Empty<double[]>();
-    private double[][] _biases = Array.Empty<double[]>();
+    private double[]?[] _biases = Array.Empty<double[]>();
     private Action<double[]> _calculateDeltas;
     private double[][][] _changes = Array.Empty<double[][]>();
     private double[][][] _changesHigh = Array.Empty<double[][]>();
@@ -23,7 +25,7 @@ public class NeuralNetwork
     private Func<double[], double[]> _runInput;
     private int[] _sizes;
     private NeuralNetworkTrainingOptions _trainOpts = new();
-    private double[][][] _weights = Array.Empty<double[][]>();
+    private double[][]?[] _weights = Array.Empty<double[][]>();
 
     public NeuralNetwork(NeuralNetworkConfiguration? configuration = null)
     {
@@ -154,8 +156,8 @@ public class NeuralNetwork
             int activeSize = _sizes[layer];
             double[] activeDelta = _deltas[layer];
             double[][] activeChanges = _changes[layer];
-            double[][] activeWeights = _weights[layer];
-            double[] activeBiases = _biases[layer];
+            double[][]? activeWeights = _weights[layer];
+            double[]? activeBiases = _biases[layer];
 
             for (var node = 0; node < activeSize; node++)
             {
@@ -168,10 +170,16 @@ public class NeuralNetwork
                     change = learningRate * delta * incoming[k] + momentum * change;
 
                     activeChanges[node][k] = change;
-                    activeWeights[node][k] += change;
+                    if (activeWeights != null)
+                    {
+                        activeWeights[node][k] += change;
+                    }
                 }
 
-                activeBiases[node] += learningRate * delta;
+                if (activeBiases != null)
+                {
+                    activeBiases[node] += learningRate * delta;
+                }
             }
         }
     }
@@ -273,17 +281,24 @@ public class NeuralNetwork
             _errors[layerIndex] = new double[size];
             _outputs[layerIndex] = new double[size];
 
-            if (layerIndex > 0)
+            if (layerIndex <= 0)
             {
-                _biases[layerIndex] = ArrayHelper.RandomFloats(size);
-                _weights[layerIndex] = new double[size][];
-                _changes[layerIndex] = new double[size][];
+                continue;
+            }
 
-                for (var nodeIndex = 0; nodeIndex < size; nodeIndex++)
+            _biases[layerIndex] = ArrayHelper.RandomFloats(size);
+            _weights[layerIndex] = new double[size][];
+            _changes[layerIndex] = new double[size][];
+
+            for (var nodeIndex = 0; nodeIndex < size; nodeIndex++)
+            {
+                int prevSize = _sizes[layerIndex - 1];
+                _changes[layerIndex][nodeIndex] = new double[prevSize];
+
+                double[][]? weights = _weights[layerIndex];
+                if (weights != null)
                 {
-                    int prevSize = _sizes[layerIndex - 1];
-                    _weights[layerIndex][nodeIndex] = ArrayHelper.RandomFloats(prevSize);
-                    _changes[layerIndex][nodeIndex] = new double[prevSize];
+                    weights[nodeIndex] = ArrayHelper.RandomFloats(prevSize);
                 }
             }
         }
@@ -343,8 +358,8 @@ public class NeuralNetwork
             double[] currentDeltas = _deltas[layer];
             double[][] currentChangesLow = _changesLow[layer];
             double[][] currentChangesHigh = _changesHigh[layer];
-            double[][] currentWeights = _weights[layer];
-            double[] currentBiases = _biases[layer];
+            double[][]? currentWeights = _weights[layer];
+            double[]? currentBiases = _biases[layer];
             double[] currentBiasChangesLow = _biasChangesLow[layer];
             double[] currentBiasChangesHigh = _biasChangesHigh[layer];
 
@@ -363,7 +378,10 @@ public class NeuralNetwork
 
                     currentChangesLow[node][k] = changeLow;
                     currentChangesHigh[node][k] = changeHigh;
-                    currentWeights[node][k] += learningRate * momentumCorrection / (Math.Sqrt(gradientCorrection) + epsilon);
+                    if (currentWeights != null)
+                    {
+                        currentWeights[node][k] += learningRate * momentumCorrection / (Math.Sqrt(gradientCorrection) + epsilon);
+                    }
                 }
 
                 double biasGradient = currentDeltas[node];
@@ -375,7 +393,10 @@ public class NeuralNetwork
 
                 currentBiasChangesLow[node] = biasChangeLow;
                 currentBiasChangesHigh[node] = biasChangeHigh;
-                currentBiases[node] += learningRate * biasMomentumCorrection / (Math.Sqrt(biasGradientCorrection) + epsilon);
+                if (currentBiases != null)
+                {
+                    currentBiases[node] += learningRate * biasMomentumCorrection / (Math.Sqrt(biasGradientCorrection) + epsilon);
+                }
             }
         }
     }
@@ -478,8 +499,14 @@ public class NeuralNetwork
         for (var layer = 1; layer <= _outputLayer; layer++)
         {
             int activeLayer = _sizes[layer];
-            double[][] activeWeights = _weights[layer];
-            double[] activeBiases = _biases[layer];
+            double[][]? activeWeights = _weights[layer];
+            double[]? activeBiases = _biases[layer];
+
+            if (activeWeights == null || activeBiases == null)
+            {
+                continue;
+            }
+
             double[] activeOutputs = _outputs[layer];
             for (var node = 0; node < activeLayer; node++)
             {
@@ -495,7 +522,8 @@ public class NeuralNetwork
                 activeOutputs[node] = 1 / (1 + Math.Exp(-sum));
             }
 
-            output = input = activeOutputs;
+            input = activeOutputs;
+            output = activeOutputs;
         }
 
         if (output == null)
@@ -560,15 +588,15 @@ public class NeuralNetwork
             Initialize();
         }
 
-        double[][][] jsonLayerWeights =
+        double[][]?[] jsonLayerWeights =
             _weights.Select(layerLayerWeights =>
-                    layerLayerWeights.Select(
+                    layerLayerWeights?.Select(
                             layerWeights => layerWeights.ToArray())
                         .ToArray())
                 .ToArray();
 
-        double[][] jsonLayerBiases = _biases.Select(layerBiases =>
-                layerBiases.ToArray()
+        double[]?[] jsonLayerBiases = _biases.Select(layerBiases =>
+                layerBiases?.ToArray()
             )
             .ToArray();
 
@@ -589,21 +617,8 @@ public class NeuralNetwork
             Type = nameof(NeuralNetwork),
             Sizes = _sizes.ToArray(),
             Layers = layers,
-            Options = _configuration,
-            TrainOpt = new NeuralNetworkTrainingOptions
-            {
-                ActivationType = _trainOpts.ActivationType,
-                Iteration = _trainOpts.Iteration,
-                ErrorThresh = _trainOpts.ErrorThresh,
-                LeakyReluAlpha = _trainOpts.LeakyReluAlpha,
-                LearningRate = _trainOpts.LearningRate,
-                Momentum = _trainOpts.Momentum,
-                Timeout = _trainOpts.Timeout,
-                Praxis = _trainOpts.Praxis,
-                Beta1 = _trainOpts.Beta1,
-                Beta2 = _trainOpts.Beta2,
-                Epsilon = _trainOpts.Epsilon
-            }
+            Options = _configuration.Export(),
+            TrainOpt = _trainOpts.Export()
         };
     }
 }

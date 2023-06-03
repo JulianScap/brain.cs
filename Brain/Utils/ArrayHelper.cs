@@ -41,4 +41,15 @@ public static class ArrayHelper
             that
         };
     }
+
+    public static T[] Shuffle<T>(this T[] array)
+    {
+        if (array.IsNullOrEmpty())
+        {
+            return Array.Empty<T>();
+        }
+
+        var random = new Random();
+        return array.OrderBy(_ => random.Next()).ToArray();
+    }
 }

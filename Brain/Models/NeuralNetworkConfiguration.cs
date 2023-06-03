@@ -6,6 +6,7 @@ public class NeuralNetworkConfiguration
     public int InputSize { get; set; }
     public int OutputSize { get; set; }
     public NeuralNetworkTrainingOptions? TrainingOptions { get; set; }
+    public double BinaryThresh { get; set; } = 0.5;
 
     public NeuralNetworkConfiguration Export()
     {

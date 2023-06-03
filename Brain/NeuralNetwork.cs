@@ -43,7 +43,7 @@ public class NeuralNetwork
         _adjustWeights = AdjustWeights;
     }
 
-    private NeuralNetworkState Train(TrainingDatum[] data,
+    public NeuralNetworkState Train(TrainingDatum[] data,
         NeuralNetworkTrainingOptions options
     )
     {
@@ -653,5 +653,116 @@ public class NeuralNetwork
         }
 
         return this;
+    }
+
+    public NeuralNetworkTestResult Test(TrainingDatum[] data)
+    {
+        NeuralNetworkPreparedTrainingData trainingData = PrepareTraining(data, _trainOpts);
+        TrainingDatum[] preparedData = trainingData.PreparedData;
+        // for binary classification problems with one output node
+        bool isBinary = preparedData[0].Output.Length == 1;
+
+        // run each pattern through the trained network and collect
+        // error and mis-classification statistics
+        if (isBinary)
+        {
+            return TestBinary(preparedData);
+        }
+
+        var misClasses = new List<MisClass>();
+        var errorSum = 0d;
+
+        for (var i = 0; i < preparedData.Length; i++)
+        {
+            double[] output = _runInput(preparedData[i].Input);
+            double[] target = preparedData[i].Output;
+            int actual = Array.IndexOf(output, output.Max());
+            int expected = Array.IndexOf(target, target.Max());
+
+            if (actual != expected)
+            {
+                TrainingDatum misClass = preparedData[i];
+                misClasses.Add(new MisClass
+                {
+                    Input = misClass.Input,
+                    Output = misClass.Output,
+                    Actual = actual,
+                    Expected = expected
+                });
+            }
+
+            errorSum += ArrayHelper.MeanSquaredError(output.Select((value, index) => target[index] - value).ToArray());
+        }
+
+        return new NeuralNetworkTestResult
+        {
+            Error = errorSum / preparedData.Length,
+            MisClasses = misClasses.ToArray(),
+            Total = preparedData.Length
+        };
+    }
+
+    private NeuralNetworkTestResult TestBinary(TrainingDatum[] preparedData)
+    {
+        var misClasses = new List<MisClass>();
+        var errorSum = 0d;
+        var falsePos = 0;
+        var falseNeg = 0;
+        var truePos = 0;
+        var trueNeg = 0;
+
+        for (var i = 0; i < preparedData.Length; i++)
+        {
+            double[] output = _runInput(preparedData[i].Input);
+            double[] target = preparedData[i].Output;
+            int actual = output[0] > _configuration.BinaryThresh ? 1 : 0;
+            double expected = target[0];
+
+            if (!expected.EqualEnough(actual))
+            {
+                TrainingDatum misClass = preparedData[i];
+                misClasses.Add(new MisClass
+                {
+                    Input = misClass.Input,
+                    Output = misClass.Output,
+                    Actual = actual,
+                    Expected = expected
+                });
+            }
+
+            if (actual == 0 && expected == 0)
+            {
+                trueNeg++;
+            }
+            else if (actual == 1 && expected.EqualEnough(1))
+            {
+                truePos++;
+            }
+            else if (actual == 0 && expected.EqualEnough(1))
+            {
+                falseNeg++;
+            }
+            else if (actual == 1 && expected == 0)
+            {
+                falsePos++;
+            }
+
+            errorSum += ArrayHelper.MeanSquaredError(output.Select((value, index) => target[index] - value).ToArray());
+        }
+
+        return new NeuralNetworkTestResult
+        {
+            Binary = true,
+            Error = errorSum / preparedData.Length,
+            MisClasses = misClasses.ToArray(),
+            Total = preparedData.Length,
+            TrueNegatives = trueNeg,
+            TruePositives = truePos,
+            FalseNegatives = falseNeg,
+            FalsePositives = falsePos,
+            Precision = truePos > 0 ? truePos / (truePos + falsePos) : 0,
+            Recall = truePos > 0 ? truePos / (truePos + falseNeg) : 0,
+            Accuracy = (trueNeg + truePos) / preparedData.Length
+        };
     }
 }

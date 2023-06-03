@@ -31,7 +31,7 @@ public static class ArrayHelper
     public static T? SafeGet<T>(this IList<T>? array,
         int index)
     {
-        return index < array.Count ? array[index] : default;
+        return index < array?.Count ? array[index] : default;
     }
 
     public static T[] ToArray<T>(params T[] things)

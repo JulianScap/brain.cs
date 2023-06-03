@@ -38,9 +38,10 @@ public class NeuralNetworkTests
         NeuralNetwork imported = new NeuralNetwork().Import(export);
 
         double[] result = imported.Run(ArrayHelper.ToArray<double>(0, 1));
+        double[] expected = nn.Run(ArrayHelper.ToArray<double>(0, 1));
 
         result.Should().NotBeNull().And.HaveCount(1);
-        result[0].Should().BeGreaterThan(0.9);
+        result[0].Should().BeApproximately(expected[0], 0.0000001d);
     }
 
     private static NeuralNetwork GetAndTrainXorNetwork()

@@ -24,7 +24,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Brain.Utils\Brain.Utils.csproj"/>
         <ProjectReference Include="..\Brain\Brain.csproj"/>
     </ItemGroup>
 

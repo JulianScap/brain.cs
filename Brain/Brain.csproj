@@ -4,6 +4,12 @@
         <TargetFramework>net7.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <AssemblyVersion>0.0.1.0</AssemblyVersion>
+        <PackageId>Brain.cs</PackageId>
+        <Version>0.0.1</Version>
+        <Authors>Julian Adler</Authors>
+        <PackageDescription>Port of https://github.com/BrainJS/brain.js</PackageDescription>
+        <RepositoryUrl>https://github.com/JulianScap/brain.cs</RepositoryUrl>
     </PropertyGroup>
 
     <ItemGroup>

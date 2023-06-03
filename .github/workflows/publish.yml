@@ -1,0 +1,19 @@
+name: publish to nuget
+on:
+  workflow_dispatch: 
+
+jobs:
+  publish:
+    name: build, pack & publish
+    runs-on: windows-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3
+
+      - name: dotnet pack
+        shell: powershell
+        run: dotnet pack --configuration Publish
+
+      - name: dotnet nuget push
+        shell: powershell
+        run:  dotnet nuget push $_ --api-key "${{ secrets.NUGET_PUSH }}"

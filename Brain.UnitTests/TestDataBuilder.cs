@@ -6,7 +6,7 @@ namespace Brain.UnitTests;
 
 public static class TestDataBuilder
 {
-    public static readonly NeuralNetworkConfiguration DefaultConfiguration = new NeuralNetworkConfiguration
+    public static readonly NeuralNetworkConfiguration DefaultConfiguration = new()
     {
         HiddenLayers = new[]
         {

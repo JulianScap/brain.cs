@@ -51,3 +51,11 @@ Console.WriteLine(nn.Run(ArrayHelper.ToArray<double>(1, 1))[0]);
 NeuralNetworkExport export = nn.Export();
 
 Console.WriteLine(JsonConvert.SerializeObject(export));
+
+var imported = new NeuralNetwork();
+imported.FromJson(export);
+
+Console.WriteLine(imported.Run(ArrayHelper.ToArray<double>(0, 0))[0]);
+Console.WriteLine(imported.Run(ArrayHelper.ToArray<double>(1, 0))[0]);
+Console.WriteLine(imported.Run(ArrayHelper.ToArray<double>(0, 1))[0]);
+Console.WriteLine(imported.Run(ArrayHelper.ToArray<double>(1, 1))[0]);

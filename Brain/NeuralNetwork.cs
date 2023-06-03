@@ -7,7 +7,6 @@ namespace Brain;
 [SuppressMessage("ReSharper", "CognitiveComplexity")]
 public class NeuralNetwork
 {
-    private readonly NeuralNetworkConfiguration _configuration;
     private readonly int _errorCheckInterval;
     private Action _adjustWeights;
     private double[][] _biasChangesHigh = Array.Empty<double[]>();
@@ -17,6 +16,7 @@ public class NeuralNetwork
     private double[][][] _changes = Array.Empty<double[][]>();
     private double[][][] _changesHigh = Array.Empty<double[][]>();
     private double[][][] _changesLow = Array.Empty<double[][]>();
+    private NeuralNetworkConfiguration _configuration;
     private double[][] _deltas = Array.Empty<double[]>();
     private double[][] _errors = Array.Empty<double[]>();
     private int _iterations;
@@ -620,5 +620,36 @@ public class NeuralNetwork
             Options = _configuration.Export(),
             TrainOpt = _trainOpts.Export()
         };
+    }
+
+    public NeuralNetwork FromJson(NeuralNetworkExport export)
+    {
+        _configuration = new NeuralNetworkConfiguration().Merge(export.Options);
+
+        if (export.TrainOpt != null)
+        {
+            UpdateTrainingOptions(export.TrainOpt);
+        }
+
+        _sizes = export.Sizes;
+        Initialize();
+
+        List<Layer> layers = export.Layers;
+
+        double[][]?[] layerWeights = _weights.Select((_,
+                layerIndex) => layers[layerIndex].Weights.Select(layerWeights => layerWeights.ToArray()).ToArray())
+            .ToArray();
+
+        double[]?[] layerBiases = _biases.Select((_,
+                    layerIndex) => layers[layerIndex].Biases.ToArray()
+            )
+            .ToArray();
+        for (var i = 0; i <= _outputLayer; i++)
+        {
+            _weights[i] = layerWeights[i] ?? Array.Empty<double[]>();
+            _biases[i] = layerBiases[i] ?? Array.Empty<double>();
+        }
+
+        return this;
     }
 }

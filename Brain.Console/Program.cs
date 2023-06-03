@@ -22,31 +22,66 @@ var nn = new NeuralNetwork(new NeuralNetworkConfiguration
 
 nn.Train(new TrainingDatum
     {
-        Input = ArrayHelper.ToArray<double>(0, 0),
-        Output = ArrayHelper.ToArray<double>(0)
+        Input = new[]
+        {
+            0d,
+            0d
+        },
+        Output = 0d.YieldToArray()
     },
     new TrainingDatum
     {
-        Input = ArrayHelper.ToArray<double>(0, 1),
-        Output = ArrayHelper.ToArray<double>(1)
+        Input = new[]
+        {
+            0d,
+            1d
+        },
+        Output = 1d.YieldToArray()
     },
     new TrainingDatum
     {
-        Input = ArrayHelper.ToArray<double>(1, 0),
-        Output = ArrayHelper.ToArray<double>(1)
+        Input = new[]
+        {
+            1d,
+            0d
+        },
+        Output = 1d.YieldToArray()
     },
     new TrainingDatum
     {
-        Input = ArrayHelper.ToArray<double>(1, 1),
-        Output = ArrayHelper.ToArray<double>(0)
+        Input = new[]
+        {
+            1d,
+            1d
+        },
+        Output = 0d.YieldToArray()
     }
 );
 
 
-Console.WriteLine(nn.Run(ArrayHelper.ToArray<double>(0, 0))[0]);
-Console.WriteLine(nn.Run(ArrayHelper.ToArray<double>(1, 0))[0]);
-Console.WriteLine(nn.Run(ArrayHelper.ToArray<double>(0, 1))[0]);
-Console.WriteLine(nn.Run(ArrayHelper.ToArray<double>(1, 1))[0]);
+Console.WriteLine(nn.Run(new[]
+{
+    0d,
+    0d
+})[0]);
+
+Console.WriteLine(nn.Run(new[]
+{
+    0d,
+    1d
+})[0]);
+
+Console.WriteLine(nn.Run(new[]
+{
+    1d,
+    0d
+})[0]);
+
+Console.WriteLine(nn.Run(new[]
+{
+    1d,
+    1d
+})[0]);
 
 NeuralNetworkExport export = nn.Export();
 
@@ -55,7 +90,27 @@ Console.WriteLine(JsonConvert.SerializeObject(export));
 var imported = new NeuralNetwork();
 imported.Import(export);
 
-Console.WriteLine(imported.Run(ArrayHelper.ToArray<double>(0, 0))[0]);
-Console.WriteLine(imported.Run(ArrayHelper.ToArray<double>(1, 0))[0]);
-Console.WriteLine(imported.Run(ArrayHelper.ToArray<double>(0, 1))[0]);
-Console.WriteLine(imported.Run(ArrayHelper.ToArray<double>(1, 1))[0]);
+
+Console.WriteLine(imported.Run(new[]
+{
+    0d,
+    0d
+})[0]);
+
+Console.WriteLine(imported.Run(new[]
+{
+    0d,
+    1d
+})[0]);
+
+Console.WriteLine(imported.Run(new[]
+{
+    1d,
+    0d
+})[0]);
+
+Console.WriteLine(imported.Run(new[]
+{
+    1d,
+    1d
+})[0]);

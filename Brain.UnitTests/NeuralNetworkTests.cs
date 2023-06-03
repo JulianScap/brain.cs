@@ -19,7 +19,12 @@ public class NeuralNetworkTests
     {
         NeuralNetwork nn = GetAndTrainXorNetwork();
 
-        double[] result = nn.Run(ArrayHelper.ToArray<double>(0, 1));
+        double[] result = nn.Run(new[]
+            {
+                0d,
+                1d
+            }
+        );
 
         result.Should().NotBeNull().And.HaveCount(1);
         result[0].Should().BeGreaterThan(0.9);
@@ -37,8 +42,17 @@ public class NeuralNetworkTests
 
         NeuralNetwork imported = new NeuralNetwork().Import(export);
 
-        double[] result = imported.Run(ArrayHelper.ToArray<double>(0, 1));
-        double[] expected = nn.Run(ArrayHelper.ToArray<double>(0, 1));
+        double[] result = imported.Run(new[]
+        {
+            0d,
+            1d
+        });
+
+        double[] expected = nn.Run(new[]
+        {
+            0d,
+            1d
+        });
 
         result.Should().NotBeNull().And.HaveCount(1);
         result[0].Should().BeApproximately(expected[0], double.Epsilon);
@@ -62,23 +76,39 @@ public class NeuralNetworkTests
 
         nn.Train(new TrainingDatum
             {
-                Input = ArrayHelper.ToArray<double>(0, 0),
-                Output = ArrayHelper.ToArray<double>(0)
+                Input = new[]
+                {
+                    0d,
+                    0d
+                },
+                Output = 0d.YieldToArray()
             },
             new TrainingDatum
             {
-                Input = ArrayHelper.ToArray<double>(0, 1),
-                Output = ArrayHelper.ToArray<double>(1)
+                Input = new[]
+                {
+                    0d,
+                    1d
+                },
+                Output = 1d.YieldToArray()
             },
             new TrainingDatum
             {
-                Input = ArrayHelper.ToArray<double>(1, 0),
-                Output = ArrayHelper.ToArray<double>(1)
+                Input = new[]
+                {
+                    1d,
+                    0d
+                },
+                Output = 1d.YieldToArray()
             },
             new TrainingDatum
             {
-                Input = ArrayHelper.ToArray<double>(1, 1),
-                Output = ArrayHelper.ToArray<double>(0)
+                Input = new[]
+                {
+                    1d,
+                    1d
+                },
+                Output = 0d.YieldToArray()
             }
         );
 

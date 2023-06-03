@@ -644,6 +644,7 @@ public class NeuralNetwork
                     layerIndex) => layers[layerIndex].Biases.ToArray()
             )
             .ToArray();
+
         for (var i = 0; i <= _outputLayer; i++)
         {
             _weights[i] = layerWeights[i] ?? Array.Empty<double[]>();

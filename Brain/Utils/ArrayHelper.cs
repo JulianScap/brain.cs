@@ -34,8 +34,11 @@ public static class ArrayHelper
         return index < array?.Count ? array[index] : default;
     }
 
-    public static T[] ToArray<T>(params T[] things)
+    public static T[] YieldToArray<T>(this T that)
     {
-        return things;
+        return new[]
+        {
+            that
+        };
     }
 }

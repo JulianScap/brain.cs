@@ -25,6 +25,8 @@ crossValidate.Train(trainingData, trainingOptions, 2);
 
 var network = crossValidate.ToNeuralNetwork();
 
+Serialization.WriteFile("~/brain.data/network.json", network.Export());
+
 List<IGrouping<double, double>> results = testData
     .Select(datum => new
     {
@@ -38,5 +40,5 @@ List<IGrouping<double, double>> results = testData
 
 foreach (IGrouping<double, double> result in results)
 {
-    Console.WriteLine($"{result.Key} => {result.Count()}");
+    Console.WriteLine($"Delta: {result.Key / 100} => Count: {result.Count()}");
 }

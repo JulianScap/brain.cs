@@ -12,8 +12,7 @@ var configuration = new NeuralNetworkOptions
 
 var trainingOptions = new NeuralNetworkTrainingOptions
 {
-    ActivationType = ActivationType.Sigmoid,
-    LogPeriod = 10,
+    LogPeriod = 100,
     LogAction = Console.WriteLine
 };
 

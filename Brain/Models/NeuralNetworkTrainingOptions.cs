@@ -7,28 +7,28 @@ namespace Brain.Models;
 public class NeuralNetworkTrainingOptions
 {
     [JsonConverter(typeof(StringEnumConverter))]
-    public ActivationType ActivationType { get; set; } = ActivationType.Sigmoid;
+    public ActivationType ActivationType = ActivationType.Sigmoid;
 
-    public int Iteration { get; set; } = 20_000;
-    public double ErrorThresh { get; set; } = 0.005f;
-    public Action<NeuralNetworkState>? LogAction { get; set; }
-    public int LogPeriod { get; set; } = 10;
-    public double LeakyReluAlpha { get; set; } = 0.01f;
-    public double LearningRate { get; set; } = 0.3f;
-    public double Momentum { get; set; } = 0.1f;
-    public Action<NeuralNetworkState>? Callback { get; set; }
-    public int CallbackPeriod { get; set; } = 10;
+    public int Iteration = 20_000;
+    public double ErrorThresh = 0.005f;
+    public Action<NeuralNetworkState>? LogAction;
+    public int LogPeriod = 100;
+    public double LeakyReluAlpha = 0.01f;
+    public double LearningRate = 0.3f;
+    public double Momentum = 0.1f;
+    public Action<NeuralNetworkState>? Callback;
+    public int CallbackPeriod = 100;
 
     /// <summary>
     ///     Null for infinity
     /// </summary>
-    public int? Timeout { get; set; }
+    public long? Timeout;
 
-    public double Beta1 { get; set; } = 0.9f;
-    public double Beta2 { get; set; } = 0.999f;
-    public double Epsilon { get; set; } = 1e-8f;
+    public double Beta1 = 0.9f;
+    public double Beta2 = 0.999f;
+    public double Epsilon = 1e-8f;
 
-    public string? Praxis { get; set; }
+    public string? Praxis;
 
     public NeuralNetworkTrainingOptions Export()
     {

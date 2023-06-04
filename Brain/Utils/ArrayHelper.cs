@@ -30,8 +30,14 @@ public static class ArrayHelper
 
     public static T? SafeGet<T>(this IList<T>? array,
         int index)
+        where T : class
     {
-        return index < array?.Count ? array[index] : default;
+        if (array == null)
+        {
+            return default;
+        }
+
+        return index < array.Count ? array[index] : null;
     }
 
     public static T[] YieldToArray<T>(this T that)

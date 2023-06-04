@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Brain.Models;
 using Brain.Utils;
 
@@ -93,12 +94,13 @@ public class CrossValidate
     private CrossValidationTestPartitionResults TestPartition(int id, NeuralNetworkTrainingOptions options, TrainingDatum[] trainSet, TrainingDatum[] testSet)
     {
         NeuralNetwork classifier = _initClassifier(id + 1);
-        DateTime beginTrain = DateTime.Now;
-        DateTime beginTest = DateTime.Now;
 
+        var stopwatch = Stopwatch.StartNew();
         NeuralNetworkState trainingStats = classifier.Train(trainSet, options);
+        long trainTime = stopwatch.ElapsedMilliseconds;
+
+        stopwatch.Restart();
         NeuralNetworkTestResult testStats = classifier.Test(testSet);
-        DateTime endTest = DateTime.Now;
 
         return new CrossValidationTestPartitionResults
         {
@@ -111,8 +113,8 @@ public class CrossValidate
             Recall = testStats.Recall,
             Precision = testStats.Precision,
             MisClasses = testStats.MisClasses,
-            TrainTime = beginTest - beginTrain,
-            TestTime = endTest - beginTest,
+            TrainTime = trainTime,
+            TestTime = stopwatch.ElapsedMilliseconds,
             Iterations = trainingStats.Iterations,
             Error = trainingStats.Error,
             Total = testStats.Total,

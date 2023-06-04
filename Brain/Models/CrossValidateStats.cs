@@ -2,7 +2,7 @@ namespace Brain.Models;
 
 public class CrossValidateStats
 {
-    public CrossValidateStatsAverages Averages { get; set; } = new();
-    public CrossValidateStatsResultStats Stats { get; set; } = new();
-    public CrossValidationTestPartitionResults[] Sets { get; set; } = Array.Empty<CrossValidationTestPartitionResults>();
+    public CrossValidateStatsAverages Averages = new();
+    public CrossValidateStatsResultStats Stats = new();
+    public CrossValidationTestPartitionResults[] Sets = Array.Empty<CrossValidationTestPartitionResults>();
 }

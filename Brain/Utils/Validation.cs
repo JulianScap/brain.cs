@@ -21,13 +21,23 @@ public static class Validation
         value.GreaterThan(0, propertyName);
     }
 
-    public static void StrictlyPositiveOrNull(this int? value,
+    public static void StrictlyPositiveOrNull(this long? value,
         string propertyName)
     {
         value?.GreaterThan(0, propertyName);
     }
 
     public static void GreaterThan(this int value,
+        int min,
+        string propertyName)
+    {
+        if (value < min)
+        {
+            throw new BrainException($"{propertyName}: {value} should be greater than {min}");
+        }
+    }
+
+    public static void GreaterThan(this long value,
         int min,
         string propertyName)
     {

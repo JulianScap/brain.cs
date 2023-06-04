@@ -64,7 +64,7 @@ public class NeuralNetwork
 
     private bool TrainingTick(TrainingDatum[] data,
         NeuralNetworkState status,
-        DateTime? endTime)
+        long? endTime)
     {
         Action<NeuralNetworkState>? callback = _trainOptions.Callback;
         int callbackPeriod = _trainOptions.CallbackPeriod;
@@ -73,7 +73,7 @@ public class NeuralNetwork
         Action<NeuralNetworkState>? logAction = _trainOptions.LogAction;
         int logPeriod = _trainOptions.LogPeriod;
 
-        if (status.Iterations >= iterations || status.Error <= errorThresh || DateTime.Now >= endTime)
+        if (status.Iterations >= iterations || status.Error <= errorThresh || DateTime.Now.Ticks >= endTime)
         {
             return false;
         }
@@ -197,7 +197,7 @@ public class NeuralNetwork
                 Iterations = 0
             },
             EndTime = options.Timeout.HasValue
-                ? DateTime.Now + TimeSpan.FromMilliseconds(options.Timeout.Value)
+                ? DateTime.Now.Ticks + options.Timeout.Value
                 : null
         };
     }

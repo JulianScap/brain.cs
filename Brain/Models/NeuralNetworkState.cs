@@ -2,9 +2,9 @@ namespace Brain.Models;
 
 public class NeuralNetworkState : ICloneable
 {
-    public int Iterations { get; set; }
-    public double Error { get; set; }
-    public int? Id { get; set; }
+    public int Iterations;
+    public double Error;
+    public int? Id;
 
     object ICloneable.Clone()
     {

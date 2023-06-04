@@ -1,34 +1,42 @@
 ﻿using Brain;
 using Brain.Models;
 using Brain.Utils;
-using Newtonsoft.Json;
 
-var configuration = new NeuralNetworkConfiguration
+var configuration = new NeuralNetworkOptions
 {
     HiddenLayers = new[]
     {
         3
-    },
-    TrainingOptions = new NeuralNetworkTrainingOptions
-    {
-        ActivationType = ActivationType.Sigmoid,
-        LogPeriod = 1,
-        CallbackPeriod = 1,
-        LogAction = details => Console.WriteLine("Log " + JsonConvert.SerializeObject(details)),
-        Callback = details => Console.WriteLine("Callback " + JsonConvert.SerializeObject(details))
     }
 };
 
-TrainingDatum[] trainingData = Serialization.ReadFile<TrainingDatum[]>("~/brain.data/speeds.json") ?? throw new BrainException("No training data found");
-TrainingDatum[] testData = Serialization.ReadFile<TrainingDatum[]>("~/brain.data/test.json") ?? throw new BrainException("No training data found");
+var trainingOptions = new NeuralNetworkTrainingOptions
+{
+    ActivationType = ActivationType.Sigmoid,
+    LogPeriod = 10,
+    LogAction = Console.WriteLine
+};
 
-var crossValidate = new CrossValidate(() => new NeuralNetwork(configuration));
-crossValidate.Train(trainingData, configuration.TrainingOptions);
+TrainingDatum[] trainingData = Serialization.ReadFile<TrainingDatum[]>("~/brain.data/speeds.json");
+TrainingDatum[] testData = Serialization.ReadFile<TrainingDatum[]>("~/brain.data/test.json");
+
+var crossValidate = new CrossValidate(id => new NeuralNetwork(configuration, id));
+crossValidate.Train(trainingData, trainingOptions, 2);
 
 var network = crossValidate.ToNeuralNetwork();
 
-foreach (TrainingDatum testDatum in testData)
+List<IGrouping<double, double>> results = testData
+    .Select(datum => new
+    {
+        Expected = datum.Output[0],
+        Result = network.Run(datum.Input)[0]
+    })
+    .Select(x => Math.Abs(x.Expected - x.Result))
+    .GroupBy(delta => Math.Round(delta * 100))
+    .OrderBy(x => x.Key)
+    .ToList();
+
+foreach (IGrouping<double, double> result in results)
 {
-    double[] output = network.Run(testDatum.Input);
-    Console.WriteLine($"{string.Join(", ", testDatum.Input)} => {output[0]} | {testDatum.Output[0]}");
+    Console.WriteLine($"{result.Key} => {result.Count()}");
 }

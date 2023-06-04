@@ -6,18 +6,19 @@ namespace Brain.UnitTests;
 
 public static class TestDataBuilder
 {
-    public static readonly NeuralNetworkConfiguration DefaultConfiguration = new()
+    public static readonly NeuralNetworkOptions DefaultOptions = new()
     {
         HiddenLayers = new[]
         {
             3
-        },
-        TrainingOptions = new NeuralNetworkTrainingOptions
-        {
-            ActivationType = ActivationType.Sigmoid,
-            LogAction = neuralNetworkState => Console.WriteLine("Log " + JsonConvert.SerializeObject(neuralNetworkState)),
-            Callback = neuralNetworkState => Console.WriteLine("Callback " + JsonConvert.SerializeObject(neuralNetworkState))
         }
+    };
+
+    public static readonly NeuralNetworkTrainingOptions DefaultTrainingOptions = new()
+    {
+        ActivationType = ActivationType.Sigmoid,
+        LogAction = neuralNetworkState => Console.WriteLine("Log " + JsonConvert.SerializeObject(neuralNetworkState)),
+        Callback = neuralNetworkState => Console.WriteLine("Callback " + JsonConvert.SerializeObject(neuralNetworkState))
     };
 
     public static TrainingDatum[] GetXor()

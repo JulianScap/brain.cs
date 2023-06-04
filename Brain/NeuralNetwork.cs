@@ -8,6 +8,7 @@ namespace Brain;
 public class NeuralNetwork
 {
     private readonly int _errorCheckInterval;
+    private readonly int? _id;
     private Action _adjustWeights;
     private double[][] _biasChangesHigh = Array.Empty<double[]>();
     private double[][] _biasChangesLow = Array.Empty<double[]>();
@@ -16,24 +17,25 @@ public class NeuralNetwork
     private double[][][] _changes = Array.Empty<double[][]>();
     private double[][][] _changesHigh = Array.Empty<double[][]>();
     private double[][][] _changesLow = Array.Empty<double[][]>();
-    private NeuralNetworkConfiguration _configuration;
     private double[][] _deltas = Array.Empty<double[]>();
     private double[][] _errors = Array.Empty<double[]>();
     private int _iterations;
+    private NeuralNetworkOptions _options;
     private int _outputLayer = -1;
     private double[][] _outputs = Array.Empty<double[]>();
     private Func<double[], double[]> _runInput;
     private int[] _sizes;
-    private NeuralNetworkTrainingOptions _trainOpts = new();
+    private NeuralNetworkTrainingOptions _trainOptions = new();
     private double[][]?[] _weights = Array.Empty<double[][]>();
 
-    public NeuralNetwork(NeuralNetworkConfiguration? configuration = null)
+    public NeuralNetwork(NeuralNetworkOptions? configuration = null, int? id = null)
     {
-        _configuration = configuration ?? new NeuralNetworkConfiguration();
+        _id = id;
+        _options = configuration ?? new NeuralNetworkOptions();
 
-        List<int> sizes = _configuration.HiddenLayers.ToList();
-        sizes.Insert(0, _configuration.InputSize);
-        sizes.Add(_configuration.OutputSize);
+        List<int> sizes = _options.HiddenLayers.ToList();
+        sizes.Insert(0, _options.InputSize);
+        sizes.Add(_options.OutputSize);
 
         _sizes = sizes.ToArray();
         _errorCheckInterval = 1;
@@ -60,24 +62,16 @@ public class NeuralNetwork
         return preparedData.Status;
     }
 
-    public NeuralNetworkState Train(TrainingDatum[] data)
-    {
-        return Train(
-            data,
-            _configuration.TrainingOptions ?? new NeuralNetworkTrainingOptions()
-        );
-    }
-
     private bool TrainingTick(TrainingDatum[] data,
         NeuralNetworkState status,
         DateTime? endTime)
     {
-        Action<NeuralNetworkState>? callback = _trainOpts.Callback;
-        int callbackPeriod = _trainOpts.CallbackPeriod;
-        double errorThresh = _trainOpts.ErrorThresh;
-        double iterations = _trainOpts.Iteration;
-        Action<NeuralNetworkState>? logAction = _trainOpts.LogAction;
-        int logPeriod = _trainOpts.LogPeriod;
+        Action<NeuralNetworkState>? callback = _trainOptions.Callback;
+        int callbackPeriod = _trainOptions.CallbackPeriod;
+        double errorThresh = _trainOptions.ErrorThresh;
+        double iterations = _trainOptions.Iteration;
+        Action<NeuralNetworkState>? logAction = _trainOptions.LogAction;
+        int logPeriod = _trainOptions.LogPeriod;
 
         if (status.Iterations >= iterations || status.Error <= errorThresh || DateTime.Now >= endTime)
         {
@@ -148,8 +142,8 @@ public class NeuralNetwork
 
     private void AdjustWeights()
     {
-        double learningRate = _trainOpts.LearningRate;
-        double momentum = _trainOpts.Momentum;
+        double learningRate = _trainOptions.LearningRate;
+        double momentum = _trainOptions.Momentum;
 
         for (var layer = 1; layer <= _outputLayer; layer++)
         {
@@ -198,6 +192,7 @@ public class NeuralNetwork
             PreparedData = data,
             Status = new NeuralNetworkState
             {
+                Id = _id,
                 Error = 1,
                 Iterations = 0
             },
@@ -241,14 +236,14 @@ public class NeuralNetwork
             data[0].Input.Length
         };
 
-        if (_configuration.HiddenLayers.IsNullOrEmpty())
+        if (_options.HiddenLayers.IsNullOrEmpty())
         {
             var halfLength = (int) Math.Floor(data[0].Input.Length / 2d);
             sizes.Add(Math.Max(3, halfLength));
         }
         else
         {
-            sizes.AddRange(_configuration.HiddenLayers);
+            sizes.AddRange(_options.HiddenLayers);
         }
 
         sizes.Add(data[0].Output.Length);
@@ -305,7 +300,7 @@ public class NeuralNetwork
         }
 
         SetActivation();
-        if (_trainOpts.Praxis == Constant.Adam)
+        if (_trainOptions.Praxis == Constant.Adam)
         {
             SetupAdam();
         }
@@ -347,10 +342,10 @@ public class NeuralNetwork
         _iterations++;
 
         int iterations = _iterations;
-        double beta1 = _trainOpts.Beta1;
-        double beta2 = _trainOpts.Beta2;
-        double epsilon = _trainOpts.Epsilon;
-        double learningRate = _trainOpts.LearningRate;
+        double beta1 = _trainOptions.Beta1;
+        double beta2 = _trainOptions.Beta2;
+        double epsilon = _trainOptions.Epsilon;
+        double learningRate = _trainOptions.LearningRate;
 
         for (var layer = 1; layer <= _outputLayer; layer++)
         {
@@ -404,7 +399,7 @@ public class NeuralNetwork
 
     private void SetActivation(ActivationType? activation = null)
     {
-        ActivationType value = activation ?? _trainOpts.ActivationType;
+        ActivationType value = activation ?? _trainOptions.ActivationType;
         switch (value)
         {
             case ActivationType.Sigmoid:
@@ -537,9 +532,8 @@ public class NeuralNetwork
 
     private void UpdateTrainingOptions(NeuralNetworkTrainingOptions options)
     {
-        NeuralNetworkTrainingOptions merged = options.Merge(_configuration.TrainingOptions);
-        merged.ValidateTrainingOptions();
-        _trainOpts = merged;
+        options.ValidateTrainingOptions();
+        _trainOptions = options;
     }
 
     private double[] RunInput(double[] input)
@@ -618,14 +612,14 @@ public class NeuralNetwork
             Type = nameof(NeuralNetwork),
             Sizes = _sizes.ToArray(),
             Layers = layers,
-            Options = _configuration.Export(),
-            TrainOpt = _trainOpts.Export()
+            Options = _options.Export(),
+            TrainOpt = _trainOptions.Export()
         };
     }
 
     public NeuralNetwork Import(NeuralNetworkExport export)
     {
-        _configuration = new NeuralNetworkConfiguration().Merge(export.Options);
+        _options = export.Options;
 
         if (export.TrainOpt != null)
         {
@@ -657,7 +651,7 @@ public class NeuralNetwork
 
     public NeuralNetworkTestResult Test(TrainingDatum[] data)
     {
-        NeuralNetworkPreparedTrainingData trainingData = PrepareTraining(data, _trainOpts);
+        NeuralNetworkPreparedTrainingData trainingData = PrepareTraining(data, _trainOptions);
         TrainingDatum[] preparedData = trainingData.PreparedData;
         // for binary classification problems with one output node
         bool isBinary = preparedData[0].Output.Length == 1;
@@ -715,7 +709,7 @@ public class NeuralNetwork
         {
             double[] output = _runInput(preparedData[i].Input);
             double[] target = preparedData[i].Output;
-            int actual = output[0] > _configuration.BinaryThresh ? 1 : 0;
+            int actual = output[0] > _options.BinaryThresh ? 1 : 0;
             double expected = target[0];
 
             if (!expected.EqualEnough(actual))

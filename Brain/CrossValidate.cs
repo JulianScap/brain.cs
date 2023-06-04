@@ -5,10 +5,10 @@ namespace Brain;
 
 public class CrossValidate
 {
-    private readonly Func<NeuralNetwork> _initClassifier;
+    private readonly Func<int, NeuralNetwork> _initClassifier;
     private CrossValidateStats _stats;
 
-    public CrossValidate(Func<NeuralNetwork> initClassifier)
+    public CrossValidate(Func<int, NeuralNetwork> initClassifier)
     {
         _initClassifier = initClassifier;
         _stats = new CrossValidateStats();
@@ -37,7 +37,7 @@ public class CrossValidate
             var testSet = new TrainingDatum[size];
             Array.Copy(dataClone, i * size, testSet, 0, size);
 
-            CrossValidationTestPartitionResults result = TestPartition(options, dataClone, testSet);
+            CrossValidationTestPartitionResults result = TestPartition(i, options, dataClone, testSet);
 
             if (!binary.HasValue)
             {
@@ -90,9 +90,9 @@ public class CrossValidate
         return _stats;
     }
 
-    private CrossValidationTestPartitionResults TestPartition(NeuralNetworkTrainingOptions options, TrainingDatum[] trainSet, TrainingDatum[] testSet)
+    private CrossValidationTestPartitionResults TestPartition(int id, NeuralNetworkTrainingOptions options, TrainingDatum[] trainSet, TrainingDatum[] testSet)
     {
-        NeuralNetwork classifier = _initClassifier();
+        NeuralNetwork classifier = _initClassifier(id + 1);
         DateTime beginTrain = DateTime.Now;
         DateTime beginTest = DateTime.Now;
 

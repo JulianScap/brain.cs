@@ -4,6 +4,7 @@ public class NeuralNetworkState : ICloneable
 {
     public int Iterations { get; set; }
     public double Error { get; set; }
+    public int? Id { get; set; }
 
     object ICloneable.Clone()
     {
@@ -14,8 +15,14 @@ public class NeuralNetworkState : ICloneable
     {
         return new NeuralNetworkState
         {
+            Id = Id,
             Iterations = Iterations,
             Error = Error
         };
+    }
+
+    public override string ToString()
+    {
+        return $"N{Id}, Iterations {Iterations:00000}, Errors {Error}";
     }
 }

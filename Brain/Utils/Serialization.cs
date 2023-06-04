@@ -1,10 +1,11 @@
+using Brain.Models;
 using Newtonsoft.Json;
 
 namespace Brain.Utils;
 
 public static class Serialization
 {
-    public static T? ReadFile<T>(string filePath)
+    public static T ReadFile<T>(string filePath)
     {
         if (filePath.StartsWith('~'))
         {
@@ -20,6 +21,6 @@ public static class Serialization
         using var sw = new StreamReader(filePath);
         using JsonReader writer = new JsonTextReader(sw);
 
-        return serializer.Deserialize<T>(writer);
+        return serializer.Deserialize<T>(writer) ?? throw new BrainException("Null");
     }
 }

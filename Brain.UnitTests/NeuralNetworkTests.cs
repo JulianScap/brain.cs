@@ -8,15 +8,15 @@ public class NeuralNetworkTests
     [Fact]
     public void Train_ShouldTrain()
     {
-        Action toTest = () => new NeuralNetwork(TestDataBuilder.DefaultConfiguration).Train(TestDataBuilder.GetXor());
+        Action toTest = () => new NeuralNetwork(TestDataBuilder.DefaultOptions).Train(TestDataBuilder.GetXor(), TestDataBuilder.DefaultTrainingOptions);
         toTest.Should().NotThrow();
     }
 
     [Fact]
     public void Train_ShouldBeCorrect()
     {
-        var network = new NeuralNetwork(TestDataBuilder.DefaultConfiguration);
-        network.Train(TestDataBuilder.GetXor());
+        var network = new NeuralNetwork(TestDataBuilder.DefaultOptions);
+        network.Train(TestDataBuilder.GetXor(), TestDataBuilder.DefaultTrainingOptions);
 
         double[] result = network.Run(new[]
             {
@@ -32,8 +32,8 @@ public class NeuralNetworkTests
     [Fact]
     public void Train_ShouldExportAndImport()
     {
-        var network = new NeuralNetwork(TestDataBuilder.DefaultConfiguration);
-        network.Train(TestDataBuilder.GetXor());
+        var network = new NeuralNetwork(TestDataBuilder.DefaultOptions);
+        network.Train(TestDataBuilder.GetXor(), TestDataBuilder.DefaultTrainingOptions);
 
         Func<NeuralNetworkExport> toTest = () => network.Export();
         NeuralNetworkExport export = toTest.Should().NotThrow().Subject;

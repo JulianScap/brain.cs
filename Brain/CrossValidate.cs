@@ -6,13 +6,13 @@ namespace Brain;
 public class CrossValidate
 {
     private readonly Func<NeuralNetwork> _initClassifier;
+    private CrossValidateStats _stats;
 
     public CrossValidate(Func<NeuralNetwork> initClassifier)
     {
         _initClassifier = initClassifier;
+        _stats = new CrossValidateStats();
     }
-
-    public CrossValidateStats Stats { get; set; } = new();
 
     public CrossValidateStats Train(TrainingDatum[] data,
         NeuralNetworkTrainingOptions options,
@@ -80,14 +80,14 @@ public class CrossValidate
         stats.TestSize = size;
         stats.TrainSize = data.Length - size;
 
-        Stats = new CrossValidateStats
+        _stats = new CrossValidateStats
         {
             Averages = averages,
             Stats = stats,
             Sets = results.ToArray()
         };
 
-        return Stats;
+        return _stats;
     }
 
     private CrossValidationTestPartitionResults TestPartition(NeuralNetworkTrainingOptions options, TrainingDatum[] trainSet, TrainingDatum[] testSet)
@@ -124,7 +124,7 @@ public class CrossValidate
     {
         var network = new NeuralNetwork();
 
-        CrossValidationTestPartitionResults? winning = Stats.Sets.MinBy(set => set.Error);
+        CrossValidationTestPartitionResults? winning = _stats.Sets.MinBy(set => set.Error);
 
         if (winning == null)
         {

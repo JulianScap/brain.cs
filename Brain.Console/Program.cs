@@ -19,72 +19,16 @@ var configuration = new NeuralNetworkConfiguration
     }
 };
 
+TrainingDatum[] trainingData = Serialization.ReadFile<TrainingDatum[]>("~/brain.data/speeds.json") ?? throw new BrainException("No training data found");
+TrainingDatum[] testData = Serialization.ReadFile<TrainingDatum[]>("~/brain.data/test.json") ?? throw new BrainException("No training data found");
+
 var crossValidate = new CrossValidate(() => new NeuralNetwork(configuration));
+crossValidate.Train(trainingData, configuration.TrainingOptions);
 
-crossValidate.Train(new[]
-    {
-        new TrainingDatum
-        {
-            Input = new[]
-            {
-                0d,
-                0d
-            },
-            Output = 0d.YieldToArray()
-        },
-        new TrainingDatum
-        {
-            Input = new[]
-            {
-                0d,
-                1d
-            },
-            Output = 1d.YieldToArray()
-        },
-        new TrainingDatum
-        {
-            Input = new[]
-            {
-                1d,
-                0d
-            },
-            Output = 1d.YieldToArray()
-        },
-        new TrainingDatum
-        {
-            Input = new[]
-            {
-                1d,
-                1d
-            },
-            Output = 0d.YieldToArray()
-        }
-    },
-    configuration.TrainingOptions
-);
+var network = crossValidate.ToNeuralNetwork();
 
-var nn = crossValidate.ToNeuralNetwork();
-
-Console.WriteLine(nn.Run(new[]
+foreach (TrainingDatum testDatum in testData)
 {
-    0d,
-    0d
-})[0]);
-
-Console.WriteLine(nn.Run(new[]
-{
-    0d,
-    1d
-})[0]);
-
-Console.WriteLine(nn.Run(new[]
-{
-    1d,
-    0d
-})[0]);
-
-Console.WriteLine(nn.Run(new[]
-{
-    1d,
-    1d
-})[0]);
+    double[] output = network.Run(testDatum.Input);
+    Console.WriteLine($"{string.Join(", ", testDatum.Input)} => {output[0]} | {testDatum.Output[0]}");
+}

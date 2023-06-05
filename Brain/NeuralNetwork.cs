@@ -50,12 +50,15 @@ public class NeuralNetwork
     )
     {
         NeuralNetworkPreparedTrainingData preparedData = PrepareTraining(data, options);
+        preparedData.Stopwatch.Start();
 
-        while (true)
+        var shouldContinue = true;
+
+        while (shouldContinue && TrainingTick(preparedData.PreparedData, preparedData.Status))
         {
-            if (!TrainingTick(preparedData.PreparedData, preparedData.Status, preparedData.EndTime))
+            if (preparedData.EndTime.HasValue)
             {
-                break;
+                shouldContinue = preparedData.Stopwatch.ElapsedMilliseconds < preparedData.EndTime;
             }
         }
 
@@ -63,8 +66,7 @@ public class NeuralNetwork
     }
 
     private bool TrainingTick(TrainingDatum[] data,
-        NeuralNetworkState status,
-        long? endTime)
+        NeuralNetworkState status)
     {
         Action<NeuralNetworkState>? callback = _trainOptions.Callback;
         int callbackPeriod = _trainOptions.CallbackPeriod;
@@ -73,7 +75,7 @@ public class NeuralNetwork
         Action<NeuralNetworkState>? logAction = _trainOptions.LogAction;
         int logPeriod = _trainOptions.LogPeriod;
 
-        if (status.Iterations >= iterations || status.Error <= errorThresh || DateTime.Now.Ticks >= endTime)
+        if (status.Iterations >= iterations || status.Error <= errorThresh)
         {
             return false;
         }
@@ -196,9 +198,7 @@ public class NeuralNetwork
                 Error = 1,
                 Iterations = 0
             },
-            EndTime = options.Timeout.HasValue
-                ? DateTime.Now.Ticks + options.Timeout.Value
-                : null
+            EndTime = options.TimeoutMilliseconds
         };
     }
 
@@ -461,7 +461,12 @@ public class NeuralNetwork
             double[] activeOutput = _outputs[layer];
             double[] activeError = _errors[layer];
             double[] activeDeltas = _deltas[layer];
-            double[][] nextLayer = _weights.SafeGet(layer + 1);
+
+            double[][]? nextLayer = null;
+            if (layer + 1 < _weights.Length)
+            {
+                nextLayer = _weights[layer + 1];
+            }
 
             for (var node = 0; node < activeSize; node++)
             {
@@ -472,7 +477,7 @@ public class NeuralNetwork
                 {
                     error = target[node] - output;
                 }
-                else
+                else if (nextLayer != null)
                 {
                     double[] deltas = _deltas[layer + 1];
                     for (var k = 0; k < deltas.Length; k++)
@@ -491,7 +496,7 @@ public class NeuralNetwork
     {
         _outputs[0] = input; // set output state of input layer
 
-        double[] output = Array.Empty<double>();
+        double[]? output = null;
         for (var layer = 1; layer <= _outputLayer; layer++)
         {
             int activeLayer = _sizes[layer];
@@ -600,11 +605,19 @@ public class NeuralNetwork
 
         for (var i = 0; i <= outputLength; i++)
         {
-            layers.Add(new Layer
+            var layer = new Layer();
+
+            if (i < jsonLayerWeights.Length)
             {
-                Weights = jsonLayerWeights.SafeGet(i),
-                Biases = jsonLayerBiases.SafeGet(i)
-            });
+                layer.Weights = jsonLayerWeights[i] ?? Array.Empty<double[]>();
+            }
+
+            if (i < jsonLayerBiases.Length)
+            {
+                layer.Biases = jsonLayerBiases[i] ?? Array.Empty<double>();
+            }
+
+            layers.Add(layer);
         }
 
         return new NeuralNetworkExport

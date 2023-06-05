@@ -28,7 +28,7 @@ public class NeuralNetworkTrainingOptions
     /// <summary>
     ///     Null for infinity
     /// </summary>
-    public long? Timeout;
+    public long? TimeoutMilliseconds;
 
     public NeuralNetworkTrainingOptions Export()
     {
@@ -40,7 +40,7 @@ public class NeuralNetworkTrainingOptions
             LeakyReluAlpha = LeakyReluAlpha,
             LearningRate = LearningRate,
             Momentum = Momentum,
-            Timeout = Timeout,
+            TimeoutMilliseconds = TimeoutMilliseconds,
             Praxis = Praxis,
             Beta1 = Beta1,
             Beta2 = Beta2,
@@ -68,7 +68,7 @@ public class NeuralNetworkTrainingOptions
             CallbackPeriod.StrictlyPositive(nameof(CallbackPeriod));
         }
 
-        Timeout.StrictlyPositiveOrNull(nameof(Timeout));
+        TimeoutMilliseconds.StrictlyPositiveOrNull(nameof(TimeoutMilliseconds));
         Beta1.InRangeExclusive(0, 1, nameof(Beta1));
         Beta2.InRangeExclusive(0, 1, nameof(Beta2));
         Epsilon.InRangeExclusive(0, 1, nameof(Epsilon));

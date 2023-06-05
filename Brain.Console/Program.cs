@@ -4,10 +4,11 @@ public static class Program
 {
     public static void Main(string[] args)
     {
-        OnlyImportTest.DoStuff();
+        NeuralNetworkTest.DoStuff();
         if (args.Length > 0)
         {
             CrossValidateTest.DoStuff();
+            OnlyImportTest.DoStuff();
         }
     }
 }

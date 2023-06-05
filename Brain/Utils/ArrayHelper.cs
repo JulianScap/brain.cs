@@ -28,16 +28,18 @@ public static class ArrayHelper
         return sum / errors.Length;
     }
 
-    public static T? SafeGet<T>(this IList<T>? array,
+    public static double[][] SafeGet(this double[][]?[] array,
         int index)
-        where T : class
     {
-        if (array == null)
-        {
-            return default;
-        }
+        double[][]? result =  index < array.Length ? array[index]: null;
+        return result ?? Array.Empty<double[]>();
+    }
 
-        return index < array.Count ? array[index] : null;
+    public static double[] SafeGet(this double[]?[] array,
+        int index)
+    {
+        double[]? result = index < array.Length ? array[index] : null;
+        return result ?? Array.Empty<double>();
     }
 
     public static T[] YieldToArray<T>(this T that)

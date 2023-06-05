@@ -461,7 +461,7 @@ public class NeuralNetwork
             double[] activeOutput = _outputs[layer];
             double[] activeError = _errors[layer];
             double[] activeDeltas = _deltas[layer];
-            double[][]? nextLayer = _weights.SafeGet(layer + 1);
+            double[][] nextLayer = _weights.SafeGet(layer + 1);
 
             for (var node = 0; node < activeSize; node++)
             {
@@ -477,7 +477,7 @@ public class NeuralNetwork
                     double[] deltas = _deltas[layer + 1];
                     for (var k = 0; k < deltas.Length; k++)
                     {
-                        error += deltas[k] * (nextLayer?[k][node] ?? 0);
+                        error += deltas[k] * nextLayer[k][node];
                     }
                 }
 
@@ -602,8 +602,8 @@ public class NeuralNetwork
         {
             layers.Add(new Layer
             {
-                Weights = jsonLayerWeights.SafeGet(i) ?? Array.Empty<double[]>(),
-                Biases = jsonLayerBiases.SafeGet(i) ?? Array.Empty<double>()
+                Weights = jsonLayerWeights.SafeGet(i),
+                Biases = jsonLayerBiases.SafeGet(i)
             });
         }
 

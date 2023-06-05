@@ -2,15 +2,15 @@ namespace Brain.Models;
 
 public class NeuralNetworkTestResult
 {
+    public int Accuracy;
     public bool Binary;
-    public MisClass[] MisClasses = Array.Empty<MisClass>();
     public double Error;
-    public int Total;
-    public int TruePositives;
-    public int TrueNegatives;
-    public int FalsePositives;
     public int FalseNegatives;
+    public int FalsePositives;
+    public MisClass[] MisClasses = Array.Empty<MisClass>();
     public int Precision;
     public int Recall;
-    public int Accuracy;
+    public int Total;
+    public int TrueNegatives;
+    public int TruePositives;
 }

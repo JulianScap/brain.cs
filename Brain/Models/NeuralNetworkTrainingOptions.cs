@@ -9,26 +9,26 @@ public class NeuralNetworkTrainingOptions
     [JsonConverter(typeof(StringEnumConverter))]
     public ActivationType ActivationType = ActivationType.Sigmoid;
 
-    public int Iteration = 20_000;
-    public double ErrorThresh = 0.005f;
-    public Action<NeuralNetworkState>? LogAction;
-    public int LogPeriod = 100;
-    public double LeakyReluAlpha = 0.01f;
-    public double LearningRate = 0.3f;
-    public double Momentum = 0.1f;
+    public double Beta1 = 0.9f;
+    public double Beta2 = 0.999f;
     public Action<NeuralNetworkState>? Callback;
     public int CallbackPeriod = 100;
+    public double Epsilon = 1e-8f;
+    public double ErrorThresh = 0.005f;
+
+    public int Iteration = 20_000;
+    public double LeakyReluAlpha = 0.01f;
+    public double LearningRate = 0.3f;
+    public Action<NeuralNetworkState>? LogAction;
+    public int LogPeriod = 100;
+    public double Momentum = 0.1f;
+
+    public string? Praxis;
 
     /// <summary>
     ///     Null for infinity
     /// </summary>
     public long? Timeout;
-
-    public double Beta1 = 0.9f;
-    public double Beta2 = 0.999f;
-    public double Epsilon = 1e-8f;
-
-    public string? Praxis;
 
     public NeuralNetworkTrainingOptions Export()
     {

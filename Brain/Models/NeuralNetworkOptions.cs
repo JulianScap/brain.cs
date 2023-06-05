@@ -2,10 +2,10 @@ namespace Brain.Models;
 
 public class NeuralNetworkOptions
 {
+    public double BinaryThresh = 0.5;
     public int[] HiddenLayers = Array.Empty<int>();
     public int InputSize;
     public int OutputSize;
-    public double BinaryThresh = 0.5;
 
     public NeuralNetworkOptions Export()
     {

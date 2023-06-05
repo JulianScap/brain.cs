@@ -2,8 +2,8 @@ namespace Brain.Models;
 
 public class CrossValidateStatsAverages
 {
-    public long TrainTime;
-    public long TestTime;
-    public int Iterations;
     public double Error;
+    public int Iterations;
+    public long TestTime;
+    public long TrainTime;
 }
